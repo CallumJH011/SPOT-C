@@ -1,0 +1,6 @@
+Start (ms),End (ms),Categories,Prompt Responses
+4833,7037,Management,"{'Management_Environment setup?': 'yep', 'Management_Task complexity?': 'test'}"
+7687,12424,Rapport,"{'Rapport_Eye contact?': 'yep', 'Rapport_Verbal praise?': 'no'}"
+12424,19466,Therapeutic|Other,"{'Therapeutic_Technique used?': 'ala', 'Therapeutic_Client response?': 'hello', 'Therapeutic_Outcome?': 'BAD', 'Other_General Observations:': 'not good'}"
+19466,22037,Other,{'Other_General Observations:': 'yep'}
+22466,26634,Therapeutic,"{'Therapeutic_Technique used?': 'no', 'Therapeutic_Client response?': 'yes', 'Therapeutic_Outcome?': 'no'}"
