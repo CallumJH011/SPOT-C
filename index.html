@@ -6,11 +6,11 @@
     <title>SPOT-C | Clinical Annotation Suite</title>
     <style>
         :root {
+            --yt-red: #FF0000;
             --bg-color: #F4F7F9;
             --panel-bg: #FFFFFF;
             --border-color: #DDE1E7;
             --primary-blue: #009DDC;
-            --primary-hover: #008AC2;
             --management: #F3D97B;
             --therapeutic: #4A90E2;
             --rapport: #82CD47;
@@ -19,148 +19,90 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            height: 100vh;
-            box-sizing: border-box;
+            margin: 0; padding: 20px;
+            display: flex; flex-direction: column; gap: 15px;
+            height: 100vh; box-sizing: border-box; overflow: hidden;
         }
 
-        /* Layout Sections */
-        .top-row {
-            display: flex;
-            gap: 20px;
-            flex: 6;
-            min-height: 0;
-        }
-
-        .player-side {
-            flex: 2;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .sidebar {
-            flex: 1;
-            background: var(--panel-bg);
+        /* Video Player Container */
+        .video-wrapper {
+            position: relative;
+            background: #000;
             border-radius: 12px;
-            border: 1px solid var(--border-color);
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            overflow-y: auto;
-        }
-
-        .bottom-row {
-            display: flex;
-            gap: 20px;
-            flex: 3;
-            min-height: 0;
-        }
-
-        .panel {
-            background: var(--panel-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            padding: 15px;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        /* Components */
-        #video-container {
-            background: black;
-            border-radius: 12px;
+            overflow: hidden;
             flex-grow: 1;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
+            flex-direction: column;
         }
 
-        video {
-            width: 100%;
-            height: 100%;
-        }
+        video { width: 100%; height: 100%; cursor: pointer; }
 
-        #title-label {
-            font-size: 14px;
-            font-weight: bold;
-            color: #2C3E50;
-        }
-
-        /* Buttons */
-        button {
-            border-radius: 8px;
+        /* YouTube Style Controls */
+        .yt-controls {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.7));
             padding: 10px;
-            font-weight: bold;
-            border: none;
+            display: flex; flex-direction: column;
+            opacity: 0; transition: opacity 0.3s;
+            z-index: 10;
+        }
+
+        .video-wrapper:hover .yt-controls { opacity: 1; }
+
+        .yt-progress-container {
+            width: 100%; height: 5px;
+            background: rgba(255,255,255,0.3);
             cursor: pointer;
-            font-size: 12px;
-            transition: background 0.2s;
+            margin-bottom: 10px;
+            position: relative;
         }
 
-        .primary-btn {
-            background-color: var(--primary-blue);
-            color: white;
+        .yt-progress-bar {
+            height: 100%; background: var(--yt-red); width: 0%;
         }
 
-        .primary-btn:disabled {
-            background-color: #BDC3C7;
-            cursor: not-allowed;
+        .yt-bottom-row {
+            display: flex; align-items: center; gap: 15px; color: white; font-size: 13px;
         }
 
-        .secondary-btn {
-            background: white;
-            border: 1px solid #D1D1D1;
-            color: #555;
+        /* Layout */
+        .top-row { display: flex; gap: 20px; flex: 7; min-height: 0; }
+        .player-side { flex: 2; display: flex; flex-direction: column; gap: 10px; }
+        .sidebar { 
+            flex: 1; background: var(--panel-bg); border-radius: 12px; 
+            border: 1px solid var(--border-color); padding: 15px;
+            display: flex; flex-direction: column; gap: 12px; overflow-y: auto;
         }
 
-        .tag-btn {
-            min-width: 100px;
-            border: 2px solid transparent;
-        }
-
+        /* Buttons & Inputs */
+        button { border-radius: 8px; padding: 10px; font-weight: bold; border: none; cursor: pointer; font-size: 12px; }
+        .primary-btn { background-color: var(--primary-blue); color: white; }
+        .primary-btn:disabled { background-color: #BDC3C7; cursor: not-allowed; }
+        .secondary-btn { background: white; border: 1px solid #D1D1D1; color: #555; }
+        .tag-btn { min-width: 100px; border: 2px solid transparent; }
         .tag-btn.active { border-color: #2C3E50; }
-
         #btn-management { background: var(--management); }
         #btn-therapeutic { background: var(--therapeutic); color: white; }
         #btn-rapport { background: var(--rapport); }
         #btn-other { background: var(--other); }
 
-        #mark-btn.tagging {
-            background-color: var(--tagging-red);
-            color: white;
+        #mark-btn.tagging { background-color: var(--tagging-red) !important; color: white; font-weight: bold; }
+
+        /* Clinical Striped Bar */
+        #striped-timeline {
+            width: 100%; height: 35px; background: #E5E9EC;
+            position: relative; border-radius: 4px; overflow: hidden;
         }
+        .tag-stripe { position: absolute; height: 23px; top: 6px; }
 
-        /* Playback Bar */
-        #custom-slider {
-            width: 100%;
-            height: 35px;
-            background: #E5E9EC;
-            position: relative;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .tag-stripe {
-            position: absolute;
-            height: 23px;
-            top: 6px;
-            opacity: 0.8;
-        }
-
-        /* Log Table */
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; font-size: 12px; color: #7F8C8D; padding-bottom: 5px; }
-        td { font-size: 13px; padding: 8px 0; border-bottom: 1px solid #F0F0F0; }
-
+        .bottom-row { display: flex; gap: 20px; flex: 3; min-height: 0; }
+        .panel { background: var(--panel-bg); border-radius: 12px; border: 1px solid var(--border-color); padding: 15px; overflow-y: auto; flex: 1; }
+        
+        #title-label { font-size: 14px; font-weight: bold; color: #2C3E50; }
+        select { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 2px; }
     </style>
 </head>
 <body>
@@ -169,32 +111,36 @@
 
     <div class="top-row">
         <div class="player-side">
-            <div id="video-container">
-                <video id="main-video"></video>
+            <div class="video-wrapper" id="player-container">
+                <video id="main-video" onclick="togglePlay()"></video>
+                
+                <div class="yt-controls">
+                    <div class="yt-progress-container" onclick="seekVideo(event)">
+                        <div class="yt-progress-bar" id="yt-bar"></div>
+                    </div>
+                    <div class="yt-bottom-row">
+                        <span id="play-pause-icon" onclick="togglePlay()" style="cursor:pointer; font-size:18px;">▶</span>
+                        <span id="time-display">00:00.000 / 00:00.000</span>
+                        <div style="margin-left: auto; display: flex; gap: 10px; align-items: center;">
+                            Speed: 
+                            <select onchange="setSpeed(this.value)">
+                                <option value="0.5">0.5x</option>
+                                <option value="1.0" selected>1.0x</option>
+                                <option value="1.5">1.5x</option>
+                                <option value="2.0">2.0x</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
             
-            <div id="custom-slider">
-                </div>
-
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <button class="primary-btn" onclick="togglePlay()">Play / Pause</button>
-                <div>
-                    Speed: 
-                    <select onchange="setSpeed(this.value)">
-                        <option value="0.5">0.5x</option>
-                        <option value="1.0" selected>1.0x</option>
-                        <option value="1.5">1.5x</option>
-                        <option value="2.0">2.0x</option>
-                    </select>
-                </div>
-            </div>
+            <div id="striped-timeline"></div>
         </div>
 
         <div class="sidebar">
             <div style="display: flex; gap: 5px;">
                 <input type="file" id="video-upload" accept="video/*" style="display:none" onchange="loadVideo(this)">
                 <button class="primary-btn" onclick="document.getElementById('video-upload').click()">Load Recording</button>
-                
                 <input type="file" id="csv-upload" accept=".csv" style="display:none" onchange="loadCSV(this)">
                 <button id="load-save-btn" class="primary-btn" disabled onclick="document.getElementById('csv-upload').click()">Load from Save</button>
             </div>
@@ -210,31 +156,21 @@
             <button id="mark-btn" class="secondary-btn" onclick="handleMark()">Start Tagging</button>
 
             <label><b>CLINICAL PROMPTS</b></label>
-            <div id="prompt-area" style="flex-grow: 1; overflow-y: auto; background: #FAFAFA; border-radius: 8px; padding: 10px;">
-                </div>
+            <div id="prompt-area" style="flex-grow: 1; overflow-y: auto; background: #FAFAFA; border-radius: 8px; padding: 10px;"></div>
 
             <button class="primary-btn" onclick="saveEntry()">Save Full Entry</button>
         </div>
     </div>
 
     <div class="bottom-row">
-        <div class="panel">
-            <b>SESSION ACTIVITY LOG</b>
-            <table id="log-table">
-                <thead><tr><th>Categories</th><th>Time</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-        <div class="panel" id="dashboard">
-            <b>CLINICAL DASHBOARD</b>
-            <div id="stats-content" style="margin-top: 10px; font-size: 14px;"></div>
-        </div>
+        <div class="panel"><b>SESSION LOG</b><div id="log-list"></div></div>
+        <div class="panel"><b>DASHBOARD</b><div id="stats-content"></div></div>
     </div>
 
     <div style="display: flex; gap: 10px;">
         <button class="secondary-btn" onclick="exportCSV()">Save Session</button>
-        <button class="secondary-btn" onclick="window.location.reload()">Exit Tool</button>
-        <button class="secondary-btn" onclick="alert('SPOT-C Web v1.0\nAuthors: Juliette Dwyer & Callum Harsas')">Info</button>
+        <button class="secondary-btn" onclick="InfoDialog()">Info</button>
+        <button class="secondary-btn" onclick="location.reload()">Exit Tool</button>
     </div>
 
     <script>
@@ -243,12 +179,7 @@
         let selectedCats = [];
         let allTags = [];
 
-        const CATEGORIES = {
-            "Management": "#F3D97B",
-            "Therapeutic": "#4A90E2",
-            "Rapport": "#82CD47",
-            "Other": "#B2BABB"
-        };
+        const COLORS = { "Management": "#F3D97B", "Therapeutic": "#4A90E2", "Rapport": "#82CD47", "Other": "#B2BABB" };
 
         function formatTime(seconds) {
             let ms = Math.floor((seconds % 1) * 1000);
@@ -259,23 +190,40 @@
 
         function loadVideo(input) {
             if (input.files && input.files[0]) {
-                let file = input.files[0];
-                video.src = URL.createObjectURL(file);
-                document.getElementById('title-label').innerText = file.name;
+                video.src = URL.createObjectURL(input.files[0]);
+                document.getElementById('title-label').innerText = input.files[0].name;
                 document.getElementById('load-save-btn').disabled = false;
+                document.getElementById('load-save-btn').style.backgroundColor = "var(--primary-blue)";
             }
         }
 
         function togglePlay() {
-            video.paused ? video.play() : video.pause();
+            if (video.paused) {
+                video.play();
+                document.getElementById('play-pause-icon').innerText = "⏸";
+            } else {
+                video.pause();
+                document.getElementById('play-pause-icon').innerText = "▶";
+            }
         }
 
-        function setSpeed(val) {
-            video.playbackRate = parseFloat(val);
+        // YouTube Style Seeking
+        function seekVideo(e) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const pos = (e.clientX - rect.left) / rect.width;
+            video.currentTime = pos * video.duration;
         }
+
+        video.ontimeupdate = () => {
+            let pct = (video.currentTime / video.duration) * 100;
+            document.getElementById('yt-bar').style.width = pct + "%";
+            document.getElementById('time-display').innerText = `${formatTime(video.currentTime)} / ${formatTime(video.duration || 0)}`;
+        };
+
+        function setSpeed(val) { video.playbackRate = parseFloat(val); }
 
         function toggleCat(cat) {
-            let btn = document.getElementById(`btn-${cat.toLowerCase()}`);
+            const btn = document.getElementById(`btn-${cat.toLowerCase()}`);
             if (selectedCats.includes(cat)) {
                 selectedCats = selectedCats.filter(c => c !== cat);
                 btn.classList.remove('active');
@@ -286,79 +234,55 @@
         }
 
         function handleMark() {
-            let btn = document.getElementById('mark-btn');
             startTime = video.currentTime;
+            let btn = document.getElementById('mark-btn');
             btn.innerText = `Tagging... (${formatTime(startTime)})`;
             btn.classList.add('tagging');
         }
 
         function saveEntry() {
             if (startTime === null || selectedCats.length === 0) return;
-            
-            let entry = {
-                start: startTime,
-                end: video.currentTime,
-                cats: [...selectedCats]
-            };
-            
-            allTags.push(entry);
-            updateLog();
-            drawStripes();
-            
-            // Reset
+            allTags.push({ start: startTime, end: video.currentTime, cats: [...selectedCats] });
             startTime = null;
             selectedCats = [];
             document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('mark-btn').innerText = "Start Tagging";
             document.getElementById('mark-btn').classList.remove('tagging');
+            updateUI();
         }
 
-        function updateLog() {
-            let tbody = document.querySelector('#log-table tbody');
-            tbody.innerHTML = allTags.map(t => `
-                <tr>
-                    <td>${t.cats.join(', ')}</td>
-                    <td>${formatTime(t.start)} - ${formatTime(t.end)}</td>
-                </tr>
-            `).join('');
-        }
-
-        function drawStripes() {
-            let slider = document.getElementById('custom-slider');
-            slider.querySelectorAll('.tag-stripe').forEach(s => s.remove());
+        function updateUI() {
+            const log = document.getElementById('log-list');
+            log.innerHTML = allTags.map(t => `<div style="font-size:12px; padding:5px; border-bottom:1px solid #eee;"><b>${t.cats.join('|')}</b> | ${formatTime(t.start)}</div>`).join('');
             
+            const timeline = document.getElementById('striped-timeline');
+            timeline.innerHTML = '';
             allTags.forEach(t => {
-                let startPct = (t.start / video.duration) * 100;
-                let endPct = (t.end / video.duration) * 100;
-                let width = endPct - startPct;
-
-                let stripe = document.createElement('div');
-                stripe.className = 'tag-stripe';
-                stripe.style.left = startPct + '%';
-                stripe.style.width = width + '%';
-                stripe.style.backgroundColor = CATEGORIES[t.cats[0]];
-                slider.appendChild(stripe);
+                let s = (t.start / video.duration) * 100;
+                let w = ((t.end - t.start) / video.duration) * 100;
+                let div = document.createElement('div');
+                div.className = 'tag-stripe';
+                div.style.left = s + '%'; div.style.width = w + '%';
+                div.style.backgroundColor = COLORS[t.cats[0]];
+                timeline.appendChild(div);
             });
         }
 
         function exportCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,Start_ms,End_ms,Categories\n" 
-                + allTags.map(t => `${Math.floor(t.start*1000)},${Math.floor(t.end*1000)},${t.cats.join('|')}`).join("\n");
-            
-            let encodedUri = encodeURI(csvContent);
-            let link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "session_data.csv");
-            document.body.appendChild(link);
-            link.click();
+            let csv = "Start_ms,End_ms,Categories\n" + allTags.map(t => `${Math.floor(t.start*1000)},${Math.floor(t.end*1000)},${t.cats.join('|')}`).join('\n');
+            let blob = new Blob([csv], { type: 'text/csv' });
+            let a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = "session_data.csv";
+            a.click();
         }
 
-        // Global spacebar listener
-        window.onkeydown = function(e) {
-            if (e.code === "Space" && e.target === document.body) {
-                e.preventDefault();
-                togglePlay();
-            }
+        function InfoDialog() {
+            alert("SPOT-C | Clinical Annotation Tool\n\nAuthors: Juliette Dwyer & Callum Harsas\nUniversity of Sydney");
+        }
+
+        window.onkeydown = (e) => { 
+            if (e.code === "Space" && e.target === document.body) { e.preventDefault(); togglePlay(); } 
         };
     </script>
 </body>
