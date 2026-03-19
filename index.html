@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPOT-C | Clinical Annotation Suite</title>
+    <title>SPOT-C</title>
     <style>
         :root {
             --yt-red: #FF0000;
@@ -26,6 +26,17 @@
             height: 100vh; box-sizing: border-box; overflow: hidden;
         }
 
+        /* App Header / Logo */
+        .app-header {
+            display: flex; align-items: center; gap: 10px;
+        }
+        .logo-badge {
+            background: var(--primary-blue); color: white; 
+            padding: 5px 12px; border-radius: 6px; 
+            font-weight: 900; letter-spacing: 1px; font-size: 16px;
+        }
+        .app-title { font-size: 16px; font-weight: bold; color: #2C3E50; }
+
         /* Video Player Container */
         .video-wrapper {
             position: relative;
@@ -39,7 +50,23 @@
 
         video { width: 100%; height: 100%; cursor: pointer; }
 
-        /* YouTube Style Controls */
+        /* YouTube Style Top Title Bar */
+        .yt-title-bar {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            background: linear-gradient(rgba(0,0,0,0.8), transparent);
+            padding: 15px;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            opacity: 0; transition: opacity 0.3s;
+            z-index: 10;
+            pointer-events: none; /* Prevents blocking clicks on the video */
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        /* YouTube Style Bottom Controls */
         .yt-controls {
             position: absolute;
             bottom: 0; left: 0; right: 0;
@@ -50,7 +77,8 @@
             z-index: 10;
         }
 
-        .video-wrapper:hover .yt-controls { opacity: 1; }
+        .video-wrapper:hover .yt-controls, 
+        .video-wrapper:hover .yt-title-bar { opacity: 1; }
 
         .yt-progress-container {
             width: 100%; height: 5px;
@@ -82,12 +110,14 @@
         .primary-btn { background-color: var(--primary-blue); color: white; }
         .primary-btn:disabled { background-color: #BDC3C7; cursor: not-allowed; }
         .secondary-btn { background: white; border: 1px solid #D1D1D1; color: #555; }
+        .delete-btn { background: #FDEDEC; border: 1px solid #FADBD8; color: #E74C3C; }
         .tag-btn { min-width: 100px; border: 2px solid transparent; }
         .tag-btn.active { border-color: #2C3E50; }
-        #btn-management { background: var(--management); }
-        #btn-therapeutic { background: var(--therapeutic); color: white; }
-        #btn-rapport { background: var(--rapport); }
-        #btn-other { background: var(--other); }
+        
+        #btn-management, .btn-Management { background: var(--management); color: #2C3E50; }
+        #btn-therapeutic, .btn-Therapeutic { background: var(--therapeutic); color: white; }
+        #btn-rapport, .btn-Rapport { background: var(--rapport); color: #2C3E50; }
+        #btn-other, .btn-Other { background: var(--other); color: #2C3E50; }
 
         #mark-btn.tagging { background-color: var(--tagging-red) !important; color: white; font-weight: bold; }
 
@@ -96,22 +126,53 @@
             width: 100%; height: 35px; background: #E5E9EC;
             position: relative; border-radius: 4px; overflow: hidden;
         }
-        .tag-stripe { position: absolute; height: 23px; top: 6px; }
+        .tag-stripe { position: absolute; height: 23px; top: 6px; border-radius: 2px;}
 
+        /* Bottom Row Adjustments */
         .bottom-row { display: flex; gap: 20px; flex: 3; min-height: 0; }
-        .panel { background: var(--panel-bg); border-radius: 12px; border: 1px solid var(--border-color); padding: 15px; overflow-y: auto; flex: 1; }
+        .panel { background: var(--panel-bg); border-radius: 12px; border: 1px solid var(--border-color); padding: 15px; display: flex; flex-direction: column; overflow: hidden;}
         
-        #title-label { font-size: 14px; font-weight: bold; color: #2C3E50; }
+        #log-panel { flex: 2; }
+        #dash-panel { flex: 1; }
+
         select { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 2px; }
+        
+        .prompt-input { border: 1px solid var(--border-color); border-radius: 4px; padding: 6px; width: 100%; box-sizing: border-box; margin-top: 3px; }
+        .log-item { font-size: 12px; padding: 8px; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s;}
+        .log-item:hover { background: #f9f9f9; }
+
+        /* Modal Overlay */
+        #modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: white; padding: 20px; border-radius: 12px; width: 450px;
+            max-height: 85vh; display: flex; flex-direction: column; gap: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        #edit-prompt-area {
+            background: #FAFAFA; border-radius: 8px; padding: 10px; border: 1px solid var(--border-color); 
+            flex-grow: 1; overflow-y: auto; min-height: 120px;
+        }
+
+        .modal-footer { display: flex; justify-content: space-between; flex-shrink: 0; }
+        .dash-layout { display: flex; gap: 15px; align-items: center; margin-top: 10px; flex-grow: 1; }
     </style>
 </head>
 <body>
 
-    <div id="title-label">No Video Loaded</div>
+    <div class="app-header">
+        <div class="logo-badge">SPOT-C</div>
+        <div class="app-title"></div>
+    </div>
 
     <div class="top-row">
         <div class="player-side">
             <div class="video-wrapper" id="player-container">
+                <div class="yt-title-bar" id="video-title-display">No Video Loaded</div>
+                
                 <video id="main-video" onclick="togglePlay()"></video>
                 
                 <div class="yt-controls">
@@ -120,7 +181,7 @@
                     </div>
                     <div class="yt-bottom-row">
                         <span id="play-pause-icon" onclick="togglePlay()" style="cursor:pointer; font-size:18px;">▶</span>
-                        <span id="time-display">00:00.000 / 00:00.000</span>
+                        <span id="time-display">00:00.0 / 00:00.0</span>
                         <div style="margin-left: auto; display: flex; gap: 10px; align-items: center;">
                             Speed: 
                             <select onchange="setSpeed(this.value)">
@@ -128,6 +189,9 @@
                                 <option value="1.0" selected>1.0x</option>
                                 <option value="1.5">1.5x</option>
                                 <option value="2.0">2.0x</option>
+                                <option value="3.0">3.0x</option>
+                                <option value="4.0">4.0x</option>
+                                <option value="5.0">5.0x</option>
                             </select>
                         </div>
                     </div>
@@ -153,24 +217,68 @@
                 <button id="btn-other" class="tag-btn" onclick="toggleCat('Other')">Other</button>
             </div>
 
-            <button id="mark-btn" class="secondary-btn" onclick="handleMark()">Start Tagging</button>
+            <div style="display: flex; gap: 10px;">
+                <button id="mark-btn" class="secondary-btn" style="flex: 1;" onclick="handleMark()">Start Tagging</button>
+                <button class="secondary-btn" style="flex: 1;" onclick="jumpToLastTag()" title="Jump to the end of the latest tag">Jump to Last Tag</button>
+            </div>
 
             <label><b>CLINICAL PROMPTS</b></label>
-            <div id="prompt-area" style="flex-grow: 1; overflow-y: auto; background: #FAFAFA; border-radius: 8px; padding: 10px;"></div>
+            <div id="prompt-area" style="flex-grow: 1; overflow-y: auto; background: #FAFAFA; border-radius: 8px; padding: 10px;">
+                <div style="color: #999; font-size: 12px; font-style: italic;">Select a category to view prompts.</div>
+            </div>
 
-            <button class="primary-btn" onclick="saveEntry()">Save Full Entry</button>
+            <button class="primary-btn" style="flex-shrink: 0;" onclick="saveEntry()">Save Full Entry</button>
         </div>
     </div>
 
     <div class="bottom-row">
-        <div class="panel"><b>SESSION LOG</b><div id="log-list"></div></div>
-        <div class="panel"><b>DASHBOARD</b><div id="stats-content"></div></div>
+        <div class="panel" id="log-panel">
+            <div><b>SESSION LOG</b> <span style="font-size: 11px; color: #777;">(Double-click to edit)</span></div>
+            <div id="log-list" style="margin-top: 10px; flex-grow: 1; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 6px;"></div>
+        </div>
+        <div class="panel" id="dash-panel">
+            <div><b>DASHBOARD</b></div>
+            <div class="dash-layout">
+                <div id="stats-content" style="font-size: 13px; line-height: 1.8; flex: 1;"></div>
+                <canvas id="pie-chart" width="110" height="110" style="flex-shrink: 0;"></canvas>
+            </div>
+        </div>
     </div>
 
-    <div style="display: flex; gap: 10px;">
+    <div style="display: flex; gap: 10px; margin-top: auto; flex-shrink: 0;">
         <button class="secondary-btn" onclick="exportCSV()">Save Session</button>
-        <button class="secondary-btn" onclick="InfoDialog()">Info</button>
+        <button class="secondary-btn" onclick="alert('SPOT-C | Clinical Annotation Tool\n\nAuthors: Juliette Dwyer & Callum Harsas\nUniversity of Sydney')">Info</button>
         <button class="secondary-btn" onclick="location.reload()">Exit Tool</button>
+    </div>
+
+    <div id="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin: 0; color: #2C3E50; flex-shrink: 0;">Edit Clinical Observation</h3>
+            
+            <div style="display: flex; gap: 10px; align-items: center; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); flex-shrink: 0;">
+                <label style="font-size: 12px; font-weight: bold;">Start:</label>
+                <input type="text" id="edit-start" class="prompt-input" style="width: 80px; margin: 0;">
+                <label style="font-size: 12px; font-weight: bold;">End:</label>
+                <input type="text" id="edit-end" class="prompt-input" style="width: 80px; margin: 0;">
+                <button class="secondary-btn" onclick="seekFromEdit()">Seek</button>
+            </div>
+
+            <label style="font-size: 12px; font-weight: bold; flex-shrink: 0;">Categories:</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex-shrink: 0;" id="edit-cat-buttons">
+                </div>
+
+            <label style="font-size: 12px; font-weight: bold; flex-shrink: 0;">Prompts:</label>
+            <div id="edit-prompt-area">
+                </div>
+
+            <div class="modal-footer">
+                <button class="delete-btn" onclick="deleteTag()">Delete Tag</button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="secondary-btn" onclick="closeModal()">Cancel</button>
+                    <button class="primary-btn" onclick="saveEdit()">Save Changes</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -178,23 +286,92 @@
         let startTime = null;
         let selectedCats = [];
         let allTags = [];
+        let editingIndex = null;
+        let editSelectedCats = [];
+        let currentVideoName = "session"; // Base name for saving
 
         const COLORS = { "Management": "#F3D97B", "Therapeutic": "#4A90E2", "Rapport": "#82CD47", "Other": "#B2BABB" };
+        const CAT_ORDER = ["Management", "Other", "Rapport", "Therapeutic"];
+        
+        const CLINICAL_PROMPTS = {
+            "Management": ["Environment Setup", "Task Complexity", "Safety/Risk Factors", "Posture/Positioning"],
+            "Therapeutic": ["Technique/Strategy", "Client Response", "Level of Cueing", "Accuracy/Outcome"],
+            "Rapport": ["Engagement Level", "Verbal Reinforcement", "Eye Contact", "Joint Attention"],
+            "Other": ["General Observations", "External Distractions"]
+        };
 
+        // Time Helpers
         function formatTime(seconds) {
-            let ms = Math.floor((seconds % 1) * 1000);
+            if (seconds === null || isNaN(seconds)) return "00:00.0";
             let s = Math.floor(seconds % 60);
             let m = Math.floor(seconds / 60);
-            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${String(ms).padStart(3, '0')}`;
+            let d = Math.floor((seconds % 1) * 10);
+            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${d}`;
         }
 
+        function parseTime(timeStr) {
+            try {
+                let parts = timeStr.split(':');
+                let min = parseInt(parts[0]);
+                let sec = parseFloat(parts[1]); 
+                return (min * 60) + sec;
+            } catch (e) { return 0; }
+        }
+
+        // System Functions
         function loadVideo(input) {
             if (input.files && input.files[0]) {
-                video.src = URL.createObjectURL(input.files[0]);
-                document.getElementById('title-label').innerText = input.files[0].name;
+                let file = input.files[0];
+                video.src = URL.createObjectURL(file);
+                
+                // Update the overlay text instead of the old title label
+                document.getElementById('video-title-display').innerText = file.name;
+                
                 document.getElementById('load-save-btn').disabled = false;
-                document.getElementById('load-save-btn').style.backgroundColor = "var(--primary-blue)";
+                
+                let dotIndex = file.name.lastIndexOf('.');
+                currentVideoName = dotIndex > -1 ? file.name.substring(0, dotIndex) : file.name;
+                
+                drawPieChart();
             }
+        }
+
+        function loadCSV(input) {
+            if (!input.files || !input.files[0]) return;
+            let file = input.files[0];
+            let reader = new FileReader();
+            
+            reader.onload = function(e) {
+                let text = e.target.result;
+                let lines = text.split('\n');
+                allTags = []; 
+                
+                for (let i = 1; i < lines.length; i++) {
+                    let line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    let quoteSplitIdx = line.indexOf(',"'); 
+                    if (quoteSplitIdx !== -1) {
+                        let preQuote = line.substring(0, quoteSplitIdx);
+                        let jsonStr = line.substring(quoteSplitIdx + 2, line.length - 1); 
+                        
+                        let parts = preQuote.split(',');
+                        let start = parseInt(parts[0]) / 1000; 
+                        let end = parseInt(parts[1]) / 1000;
+                        let cats = parts[2] ? parts[2].split('|') : [];
+                        
+                        let unescapedJson = jsonStr.replace(/""/g, '"');
+                        let prompts = {};
+                        try { prompts = JSON.parse(unescapedJson); } catch(err) { console.error("JSON error:", err); }
+                        
+                        allTags.push({ start, end, cats, prompts });
+                    }
+                }
+                allTags.sort((a, b) => a.start - b.start);
+                updateUI();
+                input.value = ""; 
+            };
+            reader.readAsText(file);
         }
 
         function togglePlay() {
@@ -207,7 +384,6 @@
             }
         }
 
-        // YouTube Style Seeking
         function seekVideo(e) {
             const rect = e.currentTarget.getBoundingClientRect();
             const pos = (e.clientX - rect.left) / rect.width;
@@ -222,6 +398,25 @@
 
         function setSpeed(val) { video.playbackRate = parseFloat(val); }
 
+        function renderPrompts() {
+            const area = document.getElementById('prompt-area');
+            area.innerHTML = '';
+            if (selectedCats.length === 0) {
+                area.innerHTML = '<div style="color: #999; font-size: 12px; font-style: italic;">Select a category to view prompts.</div>';
+                return;
+            }
+            let orderedCats = CAT_ORDER.filter(c => selectedCats.includes(c));
+            orderedCats.forEach(cat => {
+                CLINICAL_PROMPTS[cat].forEach(p => {
+                    area.innerHTML += `
+                        <div style="margin-bottom: 8px;">
+                            <div style="font-size: 11px; font-weight: bold; color: #555;">${cat}: ${p}</div>
+                            <input type="text" class="prompt-input main-prompt" data-key="${cat}_${p}">
+                        </div>`;
+                });
+            });
+        }
+
         function toggleCat(cat) {
             const btn = document.getElementById(`btn-${cat.toLowerCase()}`);
             if (selectedCats.includes(cat)) {
@@ -231,6 +426,7 @@
                 selectedCats.push(cat);
                 btn.classList.add('active');
             }
+            renderPrompts();
         }
 
         function handleMark() {
@@ -239,51 +435,250 @@
             btn.innerText = `Tagging... (${formatTime(startTime)})`;
             btn.classList.add('tagging');
         }
+        
+        function jumpToLastTag() {
+            if (allTags.length === 0) {
+                alert("No tags recorded yet.");
+                return;
+            }
+            let lastEndTime = Math.max(...allTags.map(t => t.end));
+            video.currentTime = lastEndTime;
+            video.pause();
+            document.getElementById('play-pause-icon').innerText = "▶";
+        }
 
         function saveEntry() {
             if (startTime === null || selectedCats.length === 0) return;
-            allTags.push({ start: startTime, end: video.currentTime, cats: [...selectedCats] });
+            let prompts = {};
+            document.querySelectorAll('.main-prompt').forEach(inp => { prompts[inp.dataset.key] = inp.value; });
+
+            allTags.push({ start: startTime, end: video.currentTime, cats: [...selectedCats], prompts: prompts });
+            allTags.sort((a, b) => a.start - b.start);
+            
             startTime = null;
             selectedCats = [];
-            document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.sidebar .tag-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('mark-btn').innerText = "Start Tagging";
             document.getElementById('mark-btn').classList.remove('tagging');
+            renderPrompts();
             updateUI();
+        }
+
+        function getStripeBackground(cats) {
+            if (cats.length === 1) return COLORS[cats[0]];
+            let stops = [];
+            let width = 10;
+            cats.forEach((cat, index) => {
+                let color = COLORS[cat];
+                stops.push(`${color} ${index * width}px`);
+                stops.push(`${color} ${(index + 1) * width}px`);
+            });
+            return `repeating-linear-gradient(-45deg, ${stops.join(', ')})`;
+        }
+
+        function drawPieChart() {
+            const canvas = document.getElementById('pie-chart');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            let pieData = { "Management": 0, "Therapeutic": 0, "Rapport": 0, "Other": 0 };
+            let pieTotal = 0;
+            
+            allTags.forEach(t => {
+                let dur = t.end - t.start;
+                if (dur > 0 && t.cats.length > 0) {
+                    let splitDur = dur / t.cats.length;
+                    t.cats.forEach(c => {
+                        pieData[c] += splitDur;
+                        pieTotal += splitDur;
+                    });
+                }
+            });
+
+            let centerX = canvas.width / 2;
+            let centerY = canvas.height / 2;
+            let radius = Math.min(centerX, centerY);
+
+            if (pieTotal > 0) {
+                let startAngle = -Math.PI / 2;
+                Object.keys(COLORS).forEach(cat => {
+                    if (pieData[cat] > 0) {
+                        let sliceAngle = (pieData[cat] / pieTotal) * 2 * Math.PI;
+                        ctx.beginPath();
+                        ctx.moveTo(centerX, centerY);
+                        ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
+                        ctx.closePath();
+                        ctx.fillStyle = COLORS[cat];
+                        ctx.fill();
+                        startAngle += sliceAngle;
+                    }
+                });
+            } else {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+                ctx.fillStyle = "#E5E9EC";
+                ctx.fill();
+            }
         }
 
         function updateUI() {
             const log = document.getElementById('log-list');
-            log.innerHTML = allTags.map(t => `<div style="font-size:12px; padding:5px; border-bottom:1px solid #eee;"><b>${t.cats.join('|')}</b> | ${formatTime(t.start)}</div>`).join('');
+            log.innerHTML = allTags.map((t, index) => `
+                <div class="log-item" ondblclick="openEditModal(${index})">
+                    <b style="color: #2C3E50;">${t.cats.join(', ')}</b><br>
+                    <span style="color: #777;">${formatTime(t.start)} - ${formatTime(t.end)}</span>
+                </div>`).join('');
             
             const timeline = document.getElementById('striped-timeline');
             timeline.innerHTML = '';
             allTags.forEach(t => {
-                let s = (t.start / video.duration) * 100;
-                let w = ((t.end - t.start) / video.duration) * 100;
+                let s = (t.start / (video.duration || 1)) * 100;
+                let w = ((t.end - t.start) / (video.duration || 1)) * 100;
                 let div = document.createElement('div');
                 div.className = 'tag-stripe';
-                div.style.left = s + '%'; div.style.width = w + '%';
-                div.style.backgroundColor = COLORS[t.cats[0]];
+                div.style.left = s + '%'; 
+                div.style.width = w + '%';
+                div.style.background = getStripeBackground(t.cats);
                 timeline.appendChild(div);
+            });
+
+            let totalTime = allTags.reduce((sum, t) => sum + (t.end - t.start), 0);
+            let statsHtml = '';
+            Object.keys(COLORS).forEach(cat => {
+                let count = allTags.filter(t => t.cats.includes(cat)).length;
+                let dur = allTags.filter(t => t.cats.includes(cat)).reduce((sum, t) => sum + (t.end - t.start), 0);
+                let pct = totalTime > 0 ? ((dur / totalTime) * 100).toFixed(1) : 0;
+                statsHtml += `<div><b>${cat}:</b> <span style="color:#555;">${count} | ${dur.toFixed(1)}s</span></div>`;
+            });
+            document.getElementById('stats-content').innerHTML = statsHtml;
+            drawPieChart();
+        }
+
+        // ----- EDIT MODAL LOGIC -----
+        function renderEditPrompts(existingPrompts) {
+            const area = document.getElementById('edit-prompt-area');
+            area.innerHTML = '';
+            if (editSelectedCats.length === 0) {
+                area.innerHTML = '<div style="color: #999; font-size: 12px; font-style: italic;">Select a category to view prompts.</div>';
+                return;
+            }
+            let orderedCats = CAT_ORDER.filter(c => editSelectedCats.includes(c));
+            orderedCats.forEach(cat => {
+                CLINICAL_PROMPTS[cat].forEach(p => {
+                    let key = `${cat}_${p}`;
+                    let val = existingPrompts[key] || "";
+                    area.innerHTML += `
+                        <div style="margin-bottom: 8px;">
+                            <div style="font-size: 11px; font-weight: bold; color: #555;">${cat}: ${p}</div>
+                            <input type="text" class="prompt-input edit-prompt" data-key="${key}" value="${val}">
+                        </div>`;
+                });
             });
         }
 
-        function exportCSV() {
-            let csv = "Start_ms,End_ms,Categories\n" + allTags.map(t => `${Math.floor(t.start*1000)},${Math.floor(t.end*1000)},${t.cats.join('|')}`).join('\n');
-            let blob = new Blob([csv], { type: 'text/csv' });
-            let a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = "session_data.csv";
-            a.click();
+        function toggleEditCat(cat, existingPrompts) {
+            const btn = document.getElementById(`edit-btn-${cat}`);
+            if (editSelectedCats.includes(cat)) {
+                editSelectedCats = editSelectedCats.filter(c => c !== cat);
+                btn.classList.remove('active');
+            } else {
+                editSelectedCats.push(cat);
+                btn.classList.add('active');
+            }
+            let currentData = {...existingPrompts};
+            document.querySelectorAll('.edit-prompt').forEach(inp => { currentData[inp.dataset.key] = inp.value; });
+            renderEditPrompts(currentData);
         }
 
-        function InfoDialog() {
-            alert("SPOT-C | Clinical Annotation Tool\n\nAuthors: Juliette Dwyer & Callum Harsas\nUniversity of Sydney");
+        function openEditModal(index) {
+            editingIndex = index;
+            let tag = allTags[index];
+            editSelectedCats = [...tag.cats];
+            document.getElementById('edit-start').value = formatTime(tag.start);
+            document.getElementById('edit-end').value = formatTime(tag.end);
+
+            const btnArea = document.getElementById('edit-cat-buttons');
+            btnArea.innerHTML = '';
+            Object.keys(COLORS).forEach(cat => {
+                let isActive = editSelectedCats.includes(cat) ? 'active' : '';
+                btnArea.innerHTML += `<button id="edit-btn-${cat}" class="tag-btn btn-${cat} ${isActive}" onclick="toggleEditCat('${cat}', allTags[${index}].prompts)">${cat}</button>`;
+            });
+
+            renderEditPrompts(tag.prompts);
+            document.getElementById('modal-overlay').style.display = 'flex';
+        }
+
+        function seekFromEdit() {
+            let timeStr = document.getElementById('edit-start').value;
+            video.currentTime = parseTime(timeStr);
+        }
+
+        function saveEdit() {
+            let tag = allTags[editingIndex];
+            tag.start = parseTime(document.getElementById('edit-start').value);
+            tag.end = parseTime(document.getElementById('edit-end').value);
+            tag.cats = [...editSelectedCats];
+            tag.prompts = {};
+            document.querySelectorAll('.edit-prompt').forEach(inp => { tag.prompts[inp.dataset.key] = inp.value; });
+            allTags.sort((a, b) => a.start - b.start);
+            closeModal();
+            updateUI();
+        }
+
+        function deleteTag() {
+            allTags.splice(editingIndex, 1);
+            closeModal();
+            updateUI();
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').style.display = 'none';
+            editingIndex = null;
+        }
+
+        // ---------- Export CSV Logic ----------
+        async function exportCSV() {
+            if (allTags.length === 0) { alert("No tags to save!"); return; }
+            let csv = "Start_ms,End_ms,Categories,Responses\n";
+            csv += allTags.map(t => {
+                let promptStr = JSON.stringify(t.prompts || {}).replace(/"/g, '""');
+                return `${Math.floor(t.start*1000)},${Math.floor(t.end*1000)},${t.cats.join('|')},"${promptStr}"`;
+            }).join('\n');
+            
+            let defaultFilename = `${currentVideoName}_data.csv`;
+            if (window.showSaveFilePicker) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: defaultFilename,
+                        types: [{ description: 'CSV File', accept: {'text/csv': ['.csv']} }],
+                    });
+                    const writable = await handle.createWritable();
+                    await writable.write(csv);
+                    await writable.close();
+                    return; 
+                } catch (err) {
+                    if (err.name !== 'AbortError') fallbackDownload(csv, defaultFilename);
+                }
+            } else { fallbackDownload(csv, defaultFilename); }
+        }
+
+        function fallbackDownload(csvContent, filename) {
+            let blob = new Blob([csvContent], { type: 'text/csv' });
+            let a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
         }
 
         window.onkeydown = (e) => { 
-            if (e.code === "Space" && e.target === document.body) { e.preventDefault(); togglePlay(); } 
+            if (e.code === "Space" && e.target.tagName !== "INPUT") { 
+                e.preventDefault(); togglePlay(); 
+            } 
         };
+        
+        drawPieChart();
     </script>
 </body>
 </html>
