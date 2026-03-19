@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPOT-C | Clinical Annotation Suite</title>
+    <style>
+        :root {
+            --bg-color: #F4F7F9;
+            --panel-bg: #FFFFFF;
+            --border-color: #DDE1E7;
+            --primary-blue: #009DDC;
+            --primary-hover: #008AC2;
+            --management: #F3D97B;
+            --therapeutic: #4A90E2;
+            --rapport: #82CD47;
+            --other: #D3D3D3;
+            --tagging-red: #E74C3C;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* Layout Sections */
+        .top-row {
+            display: flex;
+            gap: 20px;
+            flex: 6;
+            min-height: 0;
+        }
+
+        .player-side {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .sidebar {
+            flex: 1;
+            background: var(--panel-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+        }
+
+        .bottom-row {
+            display: flex;
+            gap: 20px;
+            flex: 3;
+            min-height: 0;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* Components */
+        #video-container {
+            background: black;
+            border-radius: 12px;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+        }
+
+        #title-label {
+            font-size: 14px;
+            font-weight: bold;
+            color: #2C3E50;
+        }
+
+        /* Buttons */
+        button {
+            border-radius: 8px;
+            padding: 10px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.2s;
+        }
+
+        .primary-btn {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+
+        .primary-btn:disabled {
+            background-color: #BDC3C7;
+            cursor: not-allowed;
+        }
+
+        .secondary-btn {
+            background: white;
+            border: 1px solid #D1D1D1;
+            color: #555;
+        }
+
+        .tag-btn {
+            min-width: 100px;
+            border: 2px solid transparent;
+        }
+
+        .tag-btn.active { border-color: #2C3E50; }
+
+        #btn-management { background: var(--management); }
+        #btn-therapeutic { background: var(--therapeutic); color: white; }
+        #btn-rapport { background: var(--rapport); }
+        #btn-other { background: var(--other); }
+
+        #mark-btn.tagging {
+            background-color: var(--tagging-red);
+            color: white;
+        }
+
+        /* Playback Bar */
+        #custom-slider {
+            width: 100%;
+            height: 35px;
+            background: #E5E9EC;
+            position: relative;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .tag-stripe {
+            position: absolute;
+            height: 23px;
+            top: 6px;
+            opacity: 0.8;
+        }
+
+        /* Log Table */
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; font-size: 12px; color: #7F8C8D; padding-bottom: 5px; }
+        td { font-size: 13px; padding: 8px 0; border-bottom: 1px solid #F0F0F0; }
+
+    </style>
+</head>
+<body>
+
+    <div id="title-label">No Video Loaded</div>
+
+    <div class="top-row">
+        <div class="player-side">
+            <div id="video-container">
+                <video id="main-video"></video>
+            </div>
+            
+            <div id="custom-slider">
+                </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <button class="primary-btn" onclick="togglePlay()">Play / Pause</button>
+                <div>
+                    Speed: 
+                    <select onchange="setSpeed(this.value)">
+                        <option value="0.5">0.5x</option>
+                        <option value="1.0" selected>1.0x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2.0">2.0x</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div style="display: flex; gap: 5px;">
+                <input type="file" id="video-upload" accept="video/*" style="display:none" onchange="loadVideo(this)">
+                <button class="primary-btn" onclick="document.getElementById('video-upload').click()">Load Recording</button>
+                
+                <input type="file" id="csv-upload" accept=".csv" style="display:none" onchange="loadCSV(this)">
+                <button id="load-save-btn" class="primary-btn" disabled onclick="document.getElementById('csv-upload').click()">Load from Save</button>
+            </div>
+
+            <label><b>TAG CATEGORIES</b></label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <button id="btn-management" class="tag-btn" onclick="toggleCat('Management')">Management</button>
+                <button id="btn-therapeutic" class="tag-btn" onclick="toggleCat('Therapeutic')">Therapeutic</button>
+                <button id="btn-rapport" class="tag-btn" onclick="toggleCat('Rapport')">Rapport</button>
+                <button id="btn-other" class="tag-btn" onclick="toggleCat('Other')">Other</button>
+            </div>
+
+            <button id="mark-btn" class="secondary-btn" onclick="handleMark()">Start Tagging</button>
+
+            <label><b>CLINICAL PROMPTS</b></label>
+            <div id="prompt-area" style="flex-grow: 1; overflow-y: auto; background: #FAFAFA; border-radius: 8px; padding: 10px;">
+                </div>
+
+            <button class="primary-btn" onclick="saveEntry()">Save Full Entry</button>
+        </div>
+    </div>
+
+    <div class="bottom-row">
+        <div class="panel">
+            <b>SESSION ACTIVITY LOG</b>
+            <table id="log-table">
+                <thead><tr><th>Categories</th><th>Time</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div class="panel" id="dashboard">
+            <b>CLINICAL DASHBOARD</b>
+            <div id="stats-content" style="margin-top: 10px; font-size: 14px;"></div>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+        <button class="secondary-btn" onclick="exportCSV()">Save Session</button>
+        <button class="secondary-btn" onclick="window.location.reload()">Exit Tool</button>
+        <button class="secondary-btn" onclick="alert('SPOT-C Web v1.0\nAuthors: Juliette Dwyer & Callum Harsas')">Info</button>
+    </div>
+
+    <script>
+        let video = document.getElementById('main-video');
+        let startTime = null;
+        let selectedCats = [];
+        let allTags = [];
+
+        const CATEGORIES = {
+            "Management": "#F3D97B",
+            "Therapeutic": "#4A90E2",
+            "Rapport": "#82CD47",
+            "Other": "#B2BABB"
+        };
+
+        function formatTime(seconds) {
+            let ms = Math.floor((seconds % 1) * 1000);
+            let s = Math.floor(seconds % 60);
+            let m = Math.floor(seconds / 60);
+            return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}.${String(ms).padStart(3, '0')}`;
+        }
+
+        function loadVideo(input) {
+            if (input.files && input.files[0]) {
+                let file = input.files[0];
+                video.src = URL.createObjectURL(file);
+                document.getElementById('title-label').innerText = file.name;
+                document.getElementById('load-save-btn').disabled = false;
+            }
+        }
+
+        function togglePlay() {
+            video.paused ? video.play() : video.pause();
+        }
+
+        function setSpeed(val) {
+            video.playbackRate = parseFloat(val);
+        }
+
+        function toggleCat(cat) {
+            let btn = document.getElementById(`btn-${cat.toLowerCase()}`);
+            if (selectedCats.includes(cat)) {
+                selectedCats = selectedCats.filter(c => c !== cat);
+                btn.classList.remove('active');
+            } else {
+                selectedCats.push(cat);
+                btn.classList.add('active');
+            }
+        }
+
+        function handleMark() {
+            let btn = document.getElementById('mark-btn');
+            startTime = video.currentTime;
+            btn.innerText = `Tagging... (${formatTime(startTime)})`;
+            btn.classList.add('tagging');
+        }
+
+        function saveEntry() {
+            if (startTime === null || selectedCats.length === 0) return;
+            
+            let entry = {
+                start: startTime,
+                end: video.currentTime,
+                cats: [...selectedCats]
+            };
+            
+            allTags.push(entry);
+            updateLog();
+            drawStripes();
+            
+            // Reset
+            startTime = null;
+            selectedCats = [];
+            document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('mark-btn').innerText = "Start Tagging";
+            document.getElementById('mark-btn').classList.remove('tagging');
+        }
+
+        function updateLog() {
+            let tbody = document.querySelector('#log-table tbody');
+            tbody.innerHTML = allTags.map(t => `
+                <tr>
+                    <td>${t.cats.join(', ')}</td>
+                    <td>${formatTime(t.start)} - ${formatTime(t.end)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function drawStripes() {
+            let slider = document.getElementById('custom-slider');
+            slider.querySelectorAll('.tag-stripe').forEach(s => s.remove());
+            
+            allTags.forEach(t => {
+                let startPct = (t.start / video.duration) * 100;
+                let endPct = (t.end / video.duration) * 100;
+                let width = endPct - startPct;
+
+                let stripe = document.createElement('div');
+                stripe.className = 'tag-stripe';
+                stripe.style.left = startPct + '%';
+                stripe.style.width = width + '%';
+                stripe.style.backgroundColor = CATEGORIES[t.cats[0]];
+                slider.appendChild(stripe);
+            });
+        }
+
+        function exportCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,Start_ms,End_ms,Categories\n" 
+                + allTags.map(t => `${Math.floor(t.start*1000)},${Math.floor(t.end*1000)},${t.cats.join('|')}`).join("\n");
+            
+            let encodedUri = encodeURI(csvContent);
+            let link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "session_data.csv");
+            document.body.appendChild(link);
+            link.click();
+        }
+
+        // Global spacebar listener
+        window.onkeydown = function(e) {
+            if (e.code === "Space" && e.target === document.body) {
+                e.preventDefault();
+                togglePlay();
+            }
+        };
+    </script>
+</body>
+</html>
