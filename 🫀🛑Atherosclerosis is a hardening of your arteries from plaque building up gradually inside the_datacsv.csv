@@ -1,4 +1,0 @@
-Start_ms,End_ms,Categories,Responses
-156,5655,Management,"{'Management_Environment Setup': 'yes', 'Management_Task Complexity': 'yes', 'Management_Safety/Risk Factors': 'no  ', 'Management_Posture/Positioning': ''}"
-5655,23151,Therapeutic|Rapport,"{'Therapeutic_Technique/Strategy': '', 'Therapeutic_Client Response': 'no', 'Therapeutic_Level of Cueing': '', 'Therapeutic_Accuracy/Outcome': 'yes', 'Rapport_Engagement Level': '', 'Rapport_Verbal Reinforcement': 'no', 'Rapport_Eye Contact': '', 'Rapport_Joint Attention': 'why '}"
-23151,26907,Other,"{'Other_General Observations': 'ok', 'Other_External Distractions': ''}"

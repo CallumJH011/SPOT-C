@@ -68,8 +68,8 @@
         #mark-btn.tagging { background-color: var(--tagging-red) !important; color: white; font-weight: bold; opacity: 1; border: none;}
 
         /* Clinical Striped Bar */
-        #striped-timeline { width: 100%; height: 50px; background: #E5E9EC; position: relative; border-radius: 4px; overflow: hidden; display: none; }
-        .tag-stripe { position: absolute; height: 100%; top: 0; border-radius: 2px; }
+        #striped-timeline { width: 100%; height: 35px; background: #E5E9EC; position: relative; border-radius: 4px; overflow: hidden; }
+        .tag-stripe { position: absolute; height: 23px; top: 6px; border-radius: 2px;}
 
         /* Bottom Row Adjustments */
         .bottom-row { display: flex; gap: 20px; flex: 3; min-height: 0; }
@@ -230,16 +230,7 @@
         let editSelectedCats = [];
         let currentVideoName = "session";
 
-        // Chart State Variables
-        let chartViewMode = "Main"; 
-        let chartSlices = [];
-
         const COLORS = { "Therapeutic": "#509eed", "Management": "#60a95c", "Null": "#e88d43" };
-        const SUB_COLORS = {
-            "Tx activity": "#7abcf5", "Talk": "#2471b8",
-            "Behaviour": "#82d47e", "Engagement": "#3d8f3a", "Tech": "#2c692a",
-            "Non-Therapeutic": "#f0a867", "No Interaction": "#c9731e"
-        };
         const CAT_ORDER = ["Therapeutic", "Management", "Null"];
 
         // Time Helpers
@@ -262,7 +253,6 @@
                 document.getElementById('video-title-display').innerText = file.name;
                 document.getElementById('load-save-btn').disabled = false;
                 currentVideoName = file.name.replace(/\.[^/.]+$/, "");
-                document.getElementById('striped-timeline').style.display = 'block';
                 drawPieChart();
             }
         }
@@ -288,10 +278,7 @@
                         allTags.push({ start, end, cats, prompts });
                     }
                 }
-                allTags.sort((a, b) => a.start - b.start); 
-                document.getElementById('striped-timeline').style.display = 'block';
-                updateUI(); 
-                input.value = ""; 
+                allTags.sort((a, b) => a.start - b.start); updateUI(); input.value = ""; 
             };
             reader.readAsText(input.files[0]);
         }
@@ -321,6 +308,8 @@
         function extractPrompts(containerId) {
             let prompts = {};
             let container = document.getElementById(containerId);
+            
+            // Only extract values if they are inside an ACTIVE tab
             container.querySelectorAll('.prompt-input').forEach(inp => { 
                 const parentTab = inp.closest('.tab-content');
                 if (parentTab && !parentTab.classList.contains('active-content')) return;
@@ -485,7 +474,7 @@
             renderPrompts(); updateUI();
         }
 
-        // Interactive Pie Chart & UI Logic
+        // UI Updates
         function getStripeBackground(cats) {
             if (cats.length === 1) return COLORS[cats[0]];
             let stops = [];
@@ -494,107 +483,21 @@
         }
 
         function drawPieChart() {
-            const canvas = document.getElementById('pie-chart'); 
-            const ctx = canvas.getContext('2d');
+            const canvas = document.getElementById('pie-chart'); const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            let pieData = {}; let pieTotal = 0; chartSlices = [];
-            let statsHTML = "";
-
-            if (chartViewMode === "Main") {
-                pieData = { "Therapeutic": 0, "Management": 0, "Null": 0 };
-                allTags.forEach(t => { 
-                    let splitDur = (t.end - t.start) / Math.max(t.cats.length, 1); 
-                    t.cats.forEach(c => { 
-                        if(pieData[c] !== undefined) { pieData[c] += splitDur; pieTotal += splitDur; }
-                    }); 
-                });
-                
-                statsHTML = Object.keys(COLORS).map(cat => {
-                    let count = allTags.filter(t => t.cats.includes(cat)).length;
-                    let rawDur = allTags.filter(t => t.cats.includes(cat)).reduce((sum, t) => sum + (t.end - t.start), 0);
-                    return `<div><span style="display:inline-block;width:10px;height:10px;background:${COLORS[cat]};margin-right:4px;border-radius:2px;"></span><b>${cat}:</b> <span style="color:#555;">${count} | ${rawDur.toFixed(1)}s</span></div>`;
-                }).join('');
-
-                canvas.style.cursor = pieTotal > 0 ? "pointer" : "default";
-
-            } else {
-                // Initialize ALL specific subcategories for the selected mode so the legend always displays them fully
-                if (chartViewMode === "Therapeutic") {
-                    pieData = { "Tx activity": 0, "Talk": 0 };
-                } else if (chartViewMode === "Management") {
-                    pieData = { "Behaviour": 0, "Engagement": 0, "Tech": 0 };
-                } else if (chartViewMode === "Null") {
-                    pieData = { "Non-Therapeutic": 0, "No Interaction": 0 };
-                }
-
-                // Detailed sub-category breakdown mode
-                allTags.forEach(t => {
-                    if (t.cats.includes(chartViewMode)) {
-                        let splitDur = (t.end - t.start) / Math.max(t.cats.length, 1);
-                        let subCat = "Unknown";
-                        
-                        if (chartViewMode === "Therapeutic") {
-                            subCat = t.prompts['TxTalk'] ? "Talk" : "Tx activity";
-                        } else if (chartViewMode === "Management") {
-                            if (t.prompts['Facilitating']) subCat = "Engagement";
-                            else if (t.prompts['TechFactor'] || t.prompts['TechOther']) subCat = "Tech";
-                            else subCat = "Behaviour";
-                        } else if (chartViewMode === "Null") {
-                            subCat = (t.prompts['DueTo'] || t.prompts['DueOther']) ? "No Interaction" : "Non-Therapeutic";
-                        }
-
-                        if (pieData[subCat] !== undefined) {
-                            pieData[subCat] += splitDur; 
-                            pieTotal += splitDur;
-                        }
-                    }
-                });
-
-                statsHTML = `<div style="font-size:11px; font-weight:bold; color:#777; margin-bottom:4px;">${chartViewMode} Breakdown:</div>` + 
-                            Object.keys(pieData).map(subCat => {
-                                return `<div><span style="display:inline-block;width:10px;height:10px;background:${SUB_COLORS[subCat]};margin-right:4px;border-radius:2px;"></span><b>${subCat}:</b> <span style="color:#555;">${pieData[subCat].toFixed(1)}s</span></div>`;
-                            }).join('') + 
-                            `<div style="font-size:11px; color:var(--primary-blue); cursor:pointer; margin-top:4px;" onclick="chartViewMode='Main'; updateUI();">← Back</div>`;
-                
-                canvas.style.cursor = "pointer";
-            }
-
-            document.getElementById('stats-content').innerHTML = statsHTML;
+            let pieData = { "Therapeutic": 0, "Management": 0, "Null": 0 }, pieTotal = 0;
+            allTags.forEach(t => { let splitDur = (t.end - t.start) / Math.max(t.cats.length, 1); t.cats.forEach(c => { if(pieData[c] !== undefined) { pieData[c] += splitDur; pieTotal += splitDur; }}); });
 
             let radius = Math.min(canvas.width, canvas.height) / 2;
             if (pieTotal > 0) {
                 let startAngle = -Math.PI / 2;
-                Object.keys(pieData).forEach(key => {
-                    if (pieData[key] > 0) {
-                        let sliceAngle = (pieData[key] / pieTotal) * 2 * Math.PI;
-                        let endAngle = startAngle + sliceAngle;
-                        
-                        ctx.beginPath(); 
-                        ctx.moveTo(radius, radius); 
-                        ctx.arc(radius, radius, radius, startAngle, endAngle);
-                        ctx.fillStyle = chartViewMode === "Main" ? COLORS[key] : SUB_COLORS[key]; 
-                        ctx.fill();
-                        
-                        // Fix 2: Draw a distinct white line between the slices to prevent color bleed
-                        ctx.strokeStyle = "#FFFFFF";
-                        ctx.lineWidth = 1.5;
-                        ctx.stroke();
-                        
-                        // Save slice positions for the click listener
-                        if (chartViewMode === "Main") chartSlices.push({ id: key, startAngle, endAngle });
-                        
-                        startAngle = endAngle;
+                Object.keys(COLORS).forEach(cat => {
+                    if (pieData[cat] > 0) {
+                        ctx.beginPath(); ctx.moveTo(radius, radius); ctx.arc(radius, radius, radius, startAngle, startAngle + (pieData[cat] / pieTotal) * 2 * Math.PI);
+                        ctx.fillStyle = COLORS[cat]; ctx.fill(); startAngle += (pieData[cat] / pieTotal) * 2 * Math.PI;
                     }
                 });
-
-                // Give it a slightly different look (donut style) when in sub-category mode
-                if (chartViewMode !== "Main") {
-                    ctx.beginPath(); ctx.arc(radius, radius, radius * 0.35, 0, 2 * Math.PI); ctx.fillStyle = "white"; ctx.fill();
-                }
-            } else { 
-                ctx.beginPath(); ctx.arc(radius, radius, radius, 0, 2 * Math.PI); ctx.fillStyle = "#E5E9EC"; ctx.fill(); 
-            }
+            } else { ctx.beginPath(); ctx.arc(radius, radius, radius, 0, 2 * Math.PI); ctx.fillStyle = "#E5E9EC"; ctx.fill(); }
         }
 
         function updateUI() {
@@ -610,7 +513,12 @@
                 div.style.background = getStripeBackground(t.cats); timeline.appendChild(div);
             });
 
-            // Updating stats and pie chart handles unifying UI states
+            let totalTime = allTags.reduce((sum, t) => sum + (t.end - t.start), 0);
+            document.getElementById('stats-content').innerHTML = Object.keys(COLORS).map(cat => {
+                let count = allTags.filter(t => t.cats.includes(cat)).length;
+                let dur = allTags.filter(t => t.cats.includes(cat)).reduce((sum, t) => sum + (t.end - t.start), 0);
+                return `<div><b>${cat}:</b> <span style="color:#555;">${count} | ${dur.toFixed(1)}s</span></div>`;
+            }).join('');
             drawPieChart();
         }
 
@@ -645,8 +553,9 @@
         function deleteTag() { allTags.splice(editingIndex, 1); closeModal(); updateUI(); }
         function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; editingIndex = null; }
 
-        // ----- EXPORT -----
+        // ----- EXPORT (FIX 2: Prevent Default and Target Blank) -----
         async function exportCSV(event, btn) {
+            // Stop any form submission or page reload behaviors
             if (event) event.preventDefault();
             
             let originalText = btn.innerText;
@@ -678,10 +587,11 @@
             let a = document.createElement('a');
             a.href = url;
             a.download = filename;
-            a.target = "_blank"; 
+            a.target = "_blank"; // Force open in new context if download is blocked
             document.body.appendChild(a);
             a.click();
             
+            // Clean up and show success
             setTimeout(() => {
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
@@ -702,41 +612,7 @@
             }, 2500);
         }
 
-        // Canvas Click Listener for Interactive Drill-Down
-        document.getElementById('pie-chart').addEventListener('click', function(e) {
-            if (chartViewMode !== "Main") { 
-                // Return to main view if already in a drill-down
-                chartViewMode = "Main"; 
-                updateUI(); 
-                return; 
-            }
-
-            const rect = this.getBoundingClientRect();
-            const x = e.clientX - rect.left; 
-            const y = e.clientY - rect.top;
-            const radius = Math.min(this.width, this.height) / 2;
-            
-            // Calculate distance from center to ensure click was inside the pie
-            const dist = Math.sqrt(Math.pow(x - radius, 2) + Math.pow(y - radius, 2));
-            if (dist > radius || chartSlices.length === 0) return;
-
-            // Calculate Angle (Canvas math)
-            let angle = Math.atan2(y - radius, x - radius);
-            if (angle < -Math.PI / 2) angle += 2 * Math.PI;
-
-            // Check which slice angle the user clicked
-            for (let slice of chartSlices) {
-                if (angle >= slice.startAngle && angle <= slice.endAngle) {
-                    chartViewMode = slice.id;
-                    updateUI();
-                    break;
-                }
-            }
-        });
-
         window.onkeydown = (e) => { if (e.code === "Space" && e.target.tagName !== "INPUT") { e.preventDefault(); togglePlay(); } };
-        
-        // Initial Render
         drawPieChart();
     </script>
 </body>

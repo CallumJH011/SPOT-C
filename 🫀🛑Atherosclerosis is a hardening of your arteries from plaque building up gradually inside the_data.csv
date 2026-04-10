@@ -1,0 +1,4 @@
+Start_ms,End_ms,Categories,Responses
+0,5727,Therapeutic,"{""ParentInv"":""3"",""ClinicianInv"":""2""}"
+5727,11199,Null,"{""NatureOfTalk"":""Casual Convo""}"
+11199,17270,Management|Null,"{""TechFactor"":""Connectivity Issues"",""NatureOfTalk"":""Logistics""}"

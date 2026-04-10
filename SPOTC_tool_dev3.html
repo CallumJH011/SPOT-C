@@ -68,7 +68,7 @@
         #mark-btn.tagging { background-color: var(--tagging-red) !important; color: white; font-weight: bold; opacity: 1; border: none;}
 
         /* Clinical Striped Bar */
-        #striped-timeline { width: 100%; height: 50px; background: #E5E9EC; position: relative; border-radius: 4px; overflow: hidden; display: none; }
+        #striped-timeline { width: 100%; height: 50px; background: #E5E9EC; position: relative; border-radius: 4px; overflow: hidden; }
         .tag-stripe { position: absolute; height: 100%; top: 0; border-radius: 2px; }
 
         /* Bottom Row Adjustments */
@@ -262,7 +262,6 @@
                 document.getElementById('video-title-display').innerText = file.name;
                 document.getElementById('load-save-btn').disabled = false;
                 currentVideoName = file.name.replace(/\.[^/.]+$/, "");
-                document.getElementById('striped-timeline').style.display = 'block';
                 drawPieChart();
             }
         }
@@ -288,10 +287,7 @@
                         allTags.push({ start, end, cats, prompts });
                     }
                 }
-                allTags.sort((a, b) => a.start - b.start); 
-                document.getElementById('striped-timeline').style.display = 'block';
-                updateUI(); 
-                input.value = ""; 
+                allTags.sort((a, b) => a.start - b.start); updateUI(); input.value = ""; 
             };
             reader.readAsText(input.files[0]);
         }
