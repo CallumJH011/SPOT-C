@@ -31,16 +31,16 @@
         .app-title { font-size: 16px; font-weight: bold; color: #2C3E50; }
 
         /* Video Player Container */
-        .video-wrapper { position: relative; background: #000; border-radius: 12px; overflow: hidden; flex-grow: 1; display: flex; flex-direction: column; min-height: 200px; }
-        video { width: 100%; height: 100%; cursor: pointer; object-fit: contain; }
+        .video-wrapper { position: relative; background: #000; border-radius: 12px; overflow: hidden; flex-grow: 1; display: flex; flex-direction: column; }
+        video { width: 100%; height: 100%; cursor: pointer; }
 
         /* YouTube Style Controls */
         .yt-title-bar { position: absolute; top: 0; left: 0; right: 0; background: linear-gradient(rgba(0,0,0,0.8), transparent); padding: 15px; color: white; font-weight: 600; font-size: 14px; opacity: 0; transition: opacity 0.3s; z-index: 10; pointer-events: none; text-shadow: 0 1px 3px rgba(0,0,0,0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .yt-controls { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); padding: 10px; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.3s; z-index: 10; }
         .video-wrapper:hover .yt-controls, .video-wrapper:hover .yt-title-bar { opacity: 1; }
-        .yt-progress-container { width: 100%; height: 5px; background: rgba(255,255,255,0.3); cursor: pointer; margin-bottom: 10px; position: relative; display: flex; align-items: center; }
-        .yt-progress-bar { height: 3px; background: var(--yt-red); width: 0%; pointer-events: none;}
-        .yt-bottom-row { display: flex; align-items: center; gap: 15px; color: white; font-size: 13px; flex-wrap: wrap;}
+        .yt-progress-container { width: 100%; height: 5px; background: rgba(255,255,255,0.3); cursor: pointer; margin-bottom: 10px; position: relative; }
+        .yt-progress-bar { height: 100%; background: var(--yt-red); width: 0%; }
+        .yt-bottom-row { display: flex; align-items: center; gap: 15px; color: white; font-size: 13px; }
 
         /* Layout */
         .top-row { display: flex; gap: 20px; flex: 7; min-height: 0; }
@@ -55,7 +55,7 @@
         .secondary-btn { background: white; border: 1px solid #D1D1D1; color: #555; }
         .delete-btn { background: #FDEDEC; border: 1px solid #FADBD8; color: #E74C3C; }
         
-        .tag-btn { border: 2px solid transparent; flex: 1; color: white; opacity: 0.6; padding: 12px 8px;}
+        .tag-btn { border: 2px solid transparent; flex: 1; color: white; opacity: 0.6; }
         .tag-btn.active { opacity: 1; border-color: #2C3E50; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         
         #btn-therapeutic, .btn-Therapeutic { background: var(--therapeutic); }
@@ -68,7 +68,7 @@
         #mark-btn.tagging { background-color: var(--tagging-red) !important; color: white; font-weight: bold; opacity: 1; border: none;}
 
         /* Clinical Striped Bar */
-        #striped-timeline { width: 100%; height: 20px; background: #E5E9EC; position: relative; border-radius: 4px; overflow: hidden; display: none; flex-shrink: 0;}
+        #striped-timeline { width: 100%; height: 50px; background: #E5E9EC; position: relative; border-radius: 4px; overflow: hidden; display: none; }
         .tag-stripe { position: absolute; height: 100%; top: 0; border-radius: 2px; }
 
         /* Bottom Row */
@@ -77,115 +77,73 @@
         #log-panel { flex: 2; }
         #dash-panel { flex: 1; }
 
-        select { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 4px; font-size: 14px;}
-        .log-item { font-size: 12px; padding: 12px 8px; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s;}
+        select { background: transparent; color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 2px; }
+        .log-item { font-size: 12px; padding: 8px; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s;}
         .log-item:hover { background: #f9f9f9; }
 
-        /* Modal Overlays */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 100; justify-content: center; align-items: center; padding: 10px; box-sizing: border-box;}
-        .modal-content { background: white; padding: 20px; border-radius: 12px; width: 100%; max-width: 700px; max-height: 90vh; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); box-sizing: border-box;}
-        .modal-footer { display: flex; justify-content: space-between; flex-shrink: 0; flex-wrap: wrap; gap: 10px;}
-        .dash-layout { display: flex; gap: 15px; align-items: center; margin-top: 10px; flex-grow: 1; flex-wrap: wrap;}
+        /* Modal Overlay */
+        #modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 12px; width: 700px; max-height: 85vh; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .modal-footer { display: flex; justify-content: space-between; flex-shrink: 0; }
+        .dash-layout { display: flex; gap: 15px; align-items: center; margin-top: 10px; flex-grow: 1; }
 
         /* ----- PROMPT CARDS & TABS UI ----- */
-        .cards-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 15px; }
+        .cards-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
         .prompt-card { border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background: white;}
         .prompt-card-header { padding: 12px; color: white; font-weight: bold; font-size: 14px; }
         .prompt-card-body { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
         
         /* Inner Tab Toggles */
-        .tab-group { display: flex; gap: 5px; background: #f0f2f5; padding: 4px; border-radius: 6px; flex-wrap: wrap;}
-        .tab-btn { flex: 1; padding: 10px 4px; border: none; background: transparent; color: #555; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; transition: all 0.2s; text-align: center; }
+        .tab-group { display: flex; gap: 5px; background: #f0f2f5; padding: 4px; border-radius: 6px; }
+        .tab-btn { flex: 1; padding: 8px 4px; border: none; background: transparent; color: #555; border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: bold; transition: all 0.2s; text-align: center; }
         .tab-btn.active { background: white; color: #2C3E50; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .tab-content { display: none; flex-direction: column; gap: 10px; }
         .tab-content.active-content { display: flex; }
 
         .prompt-section-title { font-size: 12px; font-weight: bold; color: #333; margin-bottom: 2px; }
-        .scale-group { display: flex; gap: 5px; flex-wrap: wrap;}
-        .scale-btn { flex: 1; min-width: 35px; padding: 12px 0; background: #2f4eb0; color: white; border: none; border-radius: 4px; cursor: pointer; text-align: center; font-weight: bold; opacity: 0.9;}
+        .scale-group { display: flex; gap: 5px; }
+        .scale-btn { flex: 1; padding: 8px 0; background: #2f4eb0; color: white; border: none; border-radius: 4px; cursor: pointer; text-align: center; font-weight: bold; opacity: 0.9;}
         .scale-btn.active { opacity: 1; box-shadow: inset 0 0 0 2px #fff, 0 0 0 2px #2C3E50; }
-        .sub-btn { width: 100%; padding: 12px 8px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .sub-btn { width: 100%; padding: 8px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer; font-size: 11px; }
         .outline-btn { color: #555; border-color: #B0BEC5; }
         .outline-btn.active { border-color: #2C3E50; background: #ECEFF1; font-weight: bold; color: #2C3E50; }
 
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
         
-        .prompt-input { border: 1px solid #B0BEC5; border-radius: 4px; padding: 10px; width: 100%; box-sizing: border-box; font-size: 13px;}
+        .prompt-input { border: 1px solid #B0BEC5; border-radius: 4px; padding: 8px; width: 100%; box-sizing: border-box; font-size: 11px;}
 
-        /* ----- DASHBOARD ----- */
+        /* ----- DASHBOARD TABS ----- */
         .dash-header { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; margin-bottom: 4px; }
         .dash-tab-group { display: flex; gap: 3px; background: #f0f2f5; padding: 3px; border-radius: 6px; }
-        .dash-tab-btn { padding: 4px 9px; border: none; background: white; color: #2C3E50; border-radius: 4px; font-size: 10px; font-weight: bold; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: default;}
-        #dash-overview { display: flex; flex-direction: column; flex-grow: 1; min-height: 0; overflow: hidden; }
-
-        /* =========================================
-           MOBILE RESPONSIVE Adjustments
-           ========================================= */
-        @media (max-width: 768px) {
-            body {
-                height: auto;
-                overflow-y: auto;
-                padding: 10px;
-            }
-            .top-row {
-                flex-direction: column;
-                flex: none;
-            }
-            .bottom-row {
-                flex-direction: column;
-                flex: none;
-            }
-            .player-side, .sidebar, .panel {
-                width: 100%;
-                flex: none;
-            }
-            .sidebar {
-                max-height: none; 
-                height: auto;
-            }
-            .panel {
-                min-height: 250px;
-            }
-            .grid-3 {
-                grid-template-columns: 1fr;
-            }
-            .video-wrapper {
-                min-height: 250px;
-            }
-            .yt-controls {
-                opacity: 1; /* Keep controls visible on mobile */
-                background: linear-gradient(transparent, rgba(0,0,0,0.8));
-            }
-            /* Stack bottom action buttons */
-            .action-buttons-container {
-                flex-wrap: wrap;
-                justify-content: stretch;
-            }
-            .action-buttons-container button {
-                flex: 1 1 calc(50% - 10px);
-            }
-        }
+        .dash-tab-btn { padding: 4px 9px; border: none; background: transparent; color: #666; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: bold; transition: all 0.2s; }
+        .dash-tab-btn.active { background: white; color: #2C3E50; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .dash-tab-content { display: none; flex-direction: column; flex-grow: 1; min-height: 0; }
+        .dash-tab-content.active { display: flex; }
+        #dash-overview { overflow: hidden; }
+        #dash-timeline { overflow: hidden; }
+        #dash-analysis { overflow: hidden; }
     </style>
 </head>
 <body>
 
     <div class="app-header">
         <div class="logo-badge">SPOT-C</div>
-        <div class="app-title">Mobile Ready</div>
+        <div class="app-title"></div>
     </div>
 
     <div class="top-row">
         <div class="player-side">
             <div class="video-wrapper" id="player-container">
                 <div class="yt-title-bar" id="video-title-display">No Video Loaded</div>
-                <video id="main-video" playsinline onclick="togglePlay()"></video>
+                <video id="main-video" onclick="togglePlay()"></video>
                 <div class="yt-controls">
                     <div class="yt-progress-container" onclick="seekVideo(event)"><div class="yt-progress-bar" id="yt-bar"></div></div>
                     <div class="yt-bottom-row">
-                        <span id="play-pause-icon" onclick="togglePlay()" style="cursor:pointer; font-size:24px;">▶</span>
+                        <span id="play-pause-icon" onclick="togglePlay()" style="cursor:pointer; font-size:18px;">▶</span>
                         <span id="time-display">00:00.0 / 00:00.0</span>
                         <div style="margin-left: auto; display: flex; gap: 10px; align-items: center;">
+                            Speed: 
                             <select onchange="setSpeed(this.value)">
                                 <option value="0.5">0.5x</option><option value="1.0" selected>1.0x</option>
                                 <option value="1.5">1.5x</option><option value="2.0">2.0x</option>
@@ -198,32 +156,31 @@
         </div>
 
         <div class="sidebar">
-            <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+            <div style="display: flex; gap: 5px;">
                 <input type="file" id="video-upload" accept="video/*" style="display:none" onchange="loadVideo(this)">
-                <button type="button" class="primary-btn" style="flex: 1;" onclick="document.getElementById('video-upload').click()">Load Recording</button>
+                <button type="button" class="primary-btn" onclick="document.getElementById('video-upload').click()">Load Recording</button>
                 <input type="file" id="csv-upload" accept=".csv" style="display:none" onchange="loadCSV(this)">
-                <button type="button" id="load-save-btn" class="primary-btn" style="flex: 1;" disabled onclick="document.getElementById('csv-upload').click()">Load from Save</button>
+                <button type="button" id="load-save-btn" class="primary-btn" disabled onclick="document.getElementById('csv-upload').click()">Load from Save</button>
             </div>
 
             <label><b>TAG CATEGORIES</b></label>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <div style="display: flex; gap: 8px;">
                 <button type="button" id="btn-therapeutic" class="tag-btn" onclick="toggleCat('Therapeutic')">Therapeutic</button>
                 <button type="button" id="btn-management" class="tag-btn" onclick="toggleCat('Management')">Management</button>
                 <button type="button" id="btn-null" class="tag-btn" onclick="toggleCat('Null')">Null</button>
             </div>
 
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <div style="display: flex; gap: 10px;">
+                <button type="button" id="mark-btn" class="secondary-btn" style="flex: 2;" onclick="handleMark()">Start Tagging</button>
                 <button type="button" class="secondary-btn" style="flex: 1;" onclick="jumpToLastTag()" title="Jump to the end of the latest tag">Jump to Last</button>
-                <button type="button" class="secondary-btn" style="flex: 1;" onclick="openEngagementModal()" title="Rate overall session engagement">Engagement Rating</button>
-                <button type="button" id="mark-btn" class="secondary-btn" style="flex: 1 1 100%;" onclick="handleMark()">Start Tagging</button>
             </div>
 
             <label><b>CLINICAL PROMPTS</b></label>
-            <div id="prompt-area" style="flex-grow: 1; overflow-y: auto; background: #FAFAFA; border-radius: 8px; padding: 10px; min-height: 150px;">
+            <div id="prompt-area" style="flex-grow: 1; overflow-y: auto; background: #FAFAFA; border-radius: 8px; padding: 10px;">
                 <div style="color: #999; font-size: 12px; font-style: italic;">Select a category to view prompts.</div>
             </div>
 
-            <button type="button" class="primary-btn" style="flex-shrink: 0; padding: 15px;" onclick="saveEntry()">Save Full Entry</button>
+            <button type="button" class="primary-btn" style="flex-shrink: 0;" onclick="saveEntry()">Save Full Entry</button>
         </div>
     </div>
 
@@ -234,81 +191,66 @@
         </div>
 
         <div class="panel" id="dash-panel">
+            <!-- Dashboard header with tabs -->
             <div class="dash-header">
                 <b>DASHBOARD</b>
                 <div class="dash-tab-group">
-                    <button type="button" class="dash-tab-btn">Overview</button>
+                    <button type="button" class="dash-tab-btn active" onclick="switchDashTab('overview', this)">Overview</button>
+                    <button type="button" class="dash-tab-btn" onclick="switchDashTab('timeline', this)">Timeline</button>
+                    <button type="button" class="dash-tab-btn" onclick="switchDashTab('analysis', this)">Analysis</button>
                 </div>
             </div>
 
-            <div id="dash-overview">
+            <!-- Overview Tab: pie chart + stats -->
+            <div id="dash-overview" class="dash-tab-content active">
                 <div class="dash-layout">
                     <div id="stats-content" style="font-size: 12px; line-height: 1.9; flex: 1;"></div>
-                    <canvas id="pie-chart" width="110" height="110" style="flex-shrink: 0; margin: 0 auto;"></canvas>
+                    <canvas id="pie-chart" width="110" height="110" style="flex-shrink: 0;"></canvas>
                 </div>
+            </div>
+
+            <!-- Timeline Tab -->
+            <div id="dash-timeline" class="dash-tab-content">
+                <canvas id="timeline-chart" style="width: 100%; flex-grow: 1;"></canvas>
+            </div>
+
+            <!-- Analysis Tab -->
+            <div id="dash-analysis" class="dash-tab-content">
+                <canvas id="analysis-chart" style="width: 100%; flex-grow: 1;"></canvas>
             </div>
         </div>
     </div>
 
-    <div class="action-buttons-container" style="display: flex; gap: 10px; margin-top: auto; flex-shrink: 0;">
+    <div style="display: flex; gap: 10px; margin-top: auto; flex-shrink: 0;">
         <button type="button" class="secondary-btn" onclick="exportCSV(event, this)">Save Session</button>
-        <button type="button" class="secondary-btn" onclick="openTutorial()">Tutorial</button>
         <button type="button" class="secondary-btn" onclick="alert('SPOT-C | Clinical Annotation Tool')">Info</button>
         <button type="button" class="secondary-btn" onclick="if(confirm('Are you sure you want to exit? Unsaved progress will be lost.')) location.reload()">Exit Tool</button>
     </div>
 
-    <div id="edit-modal-overlay" class="modal-overlay">
+    <div id="modal-overlay">
         <div class="modal-content">
             <h3 style="margin: 0; color: #2C3E50; flex-shrink: 0;">Edit Clinical Observation</h3>
             
-            <div style="display: flex; gap: 10px; align-items: center; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); flex-shrink: 0; flex-wrap: wrap;">
+            <div style="display: flex; gap: 10px; align-items: center; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); flex-shrink: 0;">
                 <label style="font-size: 12px; font-weight: bold;">Start:</label>
-                <input type="text" id="edit-start" class="prompt-input" style="width: 80px; margin: 0; padding: 8px;">
+                <input type="text" id="edit-start" class="prompt-input" style="width: 80px; margin: 0; padding: 6px;">
                 <label style="font-size: 12px; font-weight: bold;">End:</label>
-                <input type="text" id="edit-end" class="prompt-input" style="width: 80px; margin: 0; padding: 8px;">
-                <button type="button" class="secondary-btn" onclick="seekFromEdit()" style="padding: 8px 12px; flex-grow: 1;">Seek to Start</button>
+                <input type="text" id="edit-end" class="prompt-input" style="width: 80px; margin: 0; padding: 6px;">
+                <button type="button" class="secondary-btn" onclick="seekFromEdit()" style="padding: 6px 12px;">Seek</button>
             </div>
 
             <label style="font-size: 12px; font-weight: bold; flex-shrink: 0;">Categories:</label>
-            <div style="display: flex; gap: 8px; flex-shrink: 0; flex-wrap: wrap;" id="edit-cat-buttons"></div>
+            <div style="display: flex; gap: 8px; flex-shrink: 0;" id="edit-cat-buttons"></div>
 
             <label style="font-size: 12px; font-weight: bold; flex-shrink: 0;">Prompts:</label>
             <div id="edit-prompt-area" style="background: #FAFAFA; border-radius: 8px; padding: 10px; border: 1px solid var(--border-color); flex-grow: 1; overflow-y: auto; min-height: 120px;"></div>
 
             <div class="modal-footer">
-                <button type="button" class="delete-btn" style="flex-grow: 1;" onclick="deleteTag()">Delete Tag</button>
-                <div style="display: flex; gap: 10px; flex-grow: 2;">
-                    <button type="button" class="secondary-btn" style="flex: 1;" onclick="closeModal()">Cancel</button>
-                    <button type="button" class="primary-btn" style="flex: 1;" onclick="saveEdit()">Save Changes</button>
+                <button type="button" class="delete-btn" onclick="deleteTag()">Delete Tag</button>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="secondary-btn" onclick="closeModal()">Cancel</button>
+                    <button type="button" class="primary-btn" onclick="saveEdit()">Save Changes</button>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="engagement-modal-overlay" class="modal-overlay">
-        <div class="modal-content">
-            <h3 style="margin: 0; color: #2C3E50; flex-shrink: 0;">Session Engagement Rating</h3>
-            
-            <div id="engagement-form-content" style="flex-grow: 1; overflow-y: auto; padding: 15px; background: #FAFAFA; border-radius: 8px; border: 1px solid var(--border-color);">
-                </div>
-
-            <div class="modal-footer" style="justify-content: flex-end;">
-                <button type="button" class="primary-btn" style="width: 100%; padding: 15px;" onclick="closeEngagementModal()">Save & Close</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="tutorial-modal-overlay" class="modal-overlay">
-        <div class="modal-content">
-            <h3 style="margin: 0; color: #2C3E50; flex-shrink: 0;">How to use SPOT-C</h3>
-            
-            <div id="tutorial-content" style="flex-grow: 1; overflow-y: auto; padding: 15px; background: #FAFAFA; border-radius: 8px; border: 1px solid var(--border-color); text-align: center;">
-                <p style="color: #777; margin-top: 40px;"><i>Insert your tutorial images and text here using standard HTML tags.</i></p>
-                <code style="display: block; margin-top: 10px; color: #e74c3c;">&lt;img src="path/to/tutorial-image1.jpg" style="max-width: 100%; border-radius: 8px;"&gt;</code>
-            </div>
-
-            <div class="modal-footer" style="justify-content: flex-end;">
-                <button type="button" class="primary-btn" style="width: 100%; padding: 15px;" onclick="closeTutorial()">Got it</button>
             </div>
         </div>
     </div>
@@ -321,30 +263,7 @@
         let editingIndex = null;
         let editSelectedCats = [];
         let currentVideoName = "session";
-
-        // Global Engagement Data
-        let sessionEngagement = {
-            client_interest: { score: null, notes: "" },
-            client_openness: { score: null, notes: "" },
-            client_comfort: { score: null, notes: "" },
-            clinician_interest: { score: null, notes: "" },
-            clinician_comfort: { score: null, notes: "" },
-            interaction_warmth: { score: null, notes: "" },
-            interaction_collab: { score: null, notes: "" }
-        };
-
-        const ENGAGEMENT_QUESTIONS = [
-            { section: "CLIENT ITEMS:" },
-            { id: "client_interest", title: "Client interest and enthusiasm", desc: "The client shows positive body language and enthusiasm, indicating receptiveness to the therapist and therapy. (e.g. eye contact, open posture, sustained interest rather than boredom or disinterest, displaying energy, showing enthusiasm, positioning/setup)" },
-            { id: "client_openness", title: "Client openness to what is being said/done", desc: "The client shows openness and willingness in the session, e.g. paying attention, expressing desire to participate, sharing thoughts and experiences." },
-            { id: "client_comfort", title: "Client overall comfort and confidence in engaging with service provider", desc: "Client comfort and confidence in communication, reflecting openness to what is taking place." },
-            { section: "CLINICIAN ITEMS:" },
-            { id: "clinician_interest", title: "Clinician interest and enthusiasm", desc: "The provider shows interest and attention throughout the session, e.g. eye contact, verbal/behavioural participation." },
-            { id: "clinician_comfort", title: "Clinician overall comfort and confidence in engaging the client", desc: "Comfort and confidence in interacting with the client, e.g appears relaxed in interacting/relating with the client, supports the client to take the lead." },
-            { section: "CLIENT-CLINICIAN INTERACTION ITEMS:" },
-            { id: "interaction_warmth", title: "Overall warmth of interaction/rapport", desc: "Demonstrations of positive rapport and mutual relationship, e.g. responsiveness, trust, empathy." },
-            { id: "interaction_collab", title: "Collaborative nature of interaction", desc: "Overall sense of mutual contribution to the interaction, e.g. power sharing, joint goal setting, seeking/providing feedback." }
-        ];
+        let currentDashTab = "overview";
 
         // Chart State Variables
         let chartViewMode = "Main"; 
@@ -374,6 +293,7 @@
         function getTotalSessionTime() {
             const vidDur = video.duration && !isNaN(video.duration) && video.duration > 0 ? video.duration : null;
             if (vidDur) return vidDur;
+            // fallback: sum of all tagged time
             if (allTags.length === 0) return 0;
             return Math.max(...allTags.map(t => t.end));
         }
@@ -397,28 +317,12 @@
             reader.onload = function(e) {
                 let lines = e.target.result.split('\n');
                 allTags = []; 
-                
-                // Reset engagement to default
-                Object.keys(sessionEngagement).forEach(k => sessionEngagement[k] = {score: null, notes: ""});
-
                 for (let i = 1; i < lines.length; i++) {
                     let line = lines[i].trim();
                     if (!line) continue;
                     let quoteSplitIdx = line.indexOf(',"'); 
                     if (quoteSplitIdx !== -1) {
                         let parts = line.substring(0, quoteSplitIdx).split(',');
-                        
-                        // Check if it's the global Engagement Rating metadata row
-                        if (parts[0] === 'ENGAGEMENT') {
-                            let unescapedJson = line.substring(quoteSplitIdx + 2, line.length - 1).replace(/""/g, '"');
-                            try { 
-                                let loadedEng = JSON.parse(unescapedJson); 
-                                Object.assign(sessionEngagement, loadedEng);
-                            } catch(err) {}
-                            continue;
-                        }
-
-                        // Standard timeline tag parsing
                         let start = parseInt(parts[0]) / 1000; 
                         let end = parseInt(parts[1]) / 1000;
                         let cats = parts[2] ? parts[2].split('|') : [];
@@ -431,21 +335,13 @@
                 allTags.sort((a, b) => a.start - b.start); 
                 document.getElementById('striped-timeline').style.display = 'block';
                 updateUI(); 
-                updateEngagementUI();
                 input.value = ""; 
             };
             reader.readAsText(input.files[0]);
         }
 
         function togglePlay() { video.paused ? video.play() : video.pause(); document.getElementById('play-pause-icon').innerText = video.paused ? "▶" : "⏸"; }
-        function seekVideo(e) { 
-            let rect = e.currentTarget.getBoundingClientRect();
-            // Fallback for touch events if clientX isn't directly on the event
-            let clientX = e.clientX || (e.touches && e.touches[0].clientX);
-            if(clientX) {
-                video.currentTime = ((clientX - rect.left) / rect.width) * video.duration; 
-            }
-        }
+        function seekVideo(e) { video.currentTime = ((e.clientX - e.currentTarget.getBoundingClientRect().left) / e.currentTarget.getBoundingClientRect().width) * video.duration; }
         video.ontimeupdate = () => {
             document.getElementById('yt-bar').style.width = ((video.currentTime / video.duration) * 100) + "%";
             document.getElementById('time-display').innerText = `${formatTime(video.currentTime)} / ${formatTime(video.duration || 0)}`;
@@ -634,6 +530,21 @@
         }
 
         // =====================================================
+        //  DASHBOARD TAB SWITCHING
+        // =====================================================
+        function switchDashTab(tab, btn) {
+            document.querySelectorAll('.dash-tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById('dash-' + tab).classList.add('active');
+            document.querySelectorAll('.dash-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentDashTab = tab;
+            // Render the appropriate chart
+            if (tab === 'overview') drawPieChart();
+            else if (tab === 'timeline') drawTimelineChart();
+            else if (tab === 'analysis') drawAnalysisChart();
+        }
+
+        // =====================================================
         //  OVERVIEW: Interactive Pie Chart (with % of session)
         // =====================================================
         function getStripeBackground(cats) {
@@ -680,6 +591,7 @@
                     pieData = { "Non-Therapeutic": 0, "No Interaction": 0 };
                 }
 
+                // Total duration for this parent category (for % within category)
                 let parentCatDur = allTags
                     .filter(t => t.cats.includes(chartViewMode))
                     .reduce((sum, t) => sum + (t.end - t.start) / Math.max(t.cats.length, 1), 0);
@@ -751,6 +663,241 @@
         }
 
         // =====================================================
+        //  TIMELINE CHART — session distribution over time
+        // =====================================================
+        function drawTimelineChart() {
+            const canvas = document.getElementById('timeline-chart');
+            const container = document.getElementById('dash-timeline');
+            // Size canvas to container
+            canvas.width = container.clientWidth - 2;
+            canvas.height = container.clientHeight - 2;
+
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const totalDur = getTotalSessionTime();
+
+            if (totalDur === 0 || allTags.length === 0) {
+                ctx.fillStyle = '#aaa';
+                ctx.font = '11px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('No session data yet.', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            const pad = { top: 18, right: 10, bottom: 22, left: 78 };
+            const chartW = canvas.width - pad.left - pad.right;
+            const chartH = canvas.height - pad.top - pad.bottom;
+            const categories = ['Therapeutic', 'Management', 'Null'];
+            const rowH = chartH / categories.length;
+
+            // Draw chart title
+            ctx.fillStyle = '#777';
+            ctx.font = 'bold 9px sans-serif';
+            ctx.textAlign = 'left';
+            ctx.fillText('SESSION DISTRIBUTION OVER TIME', pad.left, 11);
+
+            // Time grid lines & labels
+            const numTicks = Math.min(6, Math.floor(totalDur / 30) + 1);
+            for (let i = 0; i <= numTicks; i++) {
+                const t = (i / numTicks) * totalDur;
+                const x = pad.left + (i / numTicks) * chartW;
+                ctx.strokeStyle = '#E0E4E8';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(x, pad.top);
+                ctx.lineTo(x, pad.top + chartH);
+                ctx.stroke();
+                ctx.fillStyle = '#888';
+                ctx.font = '8px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(formatTime(t), x, canvas.height - 6);
+            }
+
+            // Draw rows
+            categories.forEach((cat, i) => {
+                const rowY = pad.top + i * rowH;
+
+                // Row background (alternating)
+                ctx.fillStyle = i % 2 === 0 ? '#f7f9fb' : '#f0f3f6';
+                ctx.fillRect(pad.left, rowY, chartW, rowH);
+
+                // Row border
+                ctx.strokeStyle = '#dde1e7';
+                ctx.lineWidth = 0.5;
+                ctx.strokeRect(pad.left, rowY, chartW, rowH);
+
+                // Category label (pill style)
+                const labelW = 70;
+                ctx.fillStyle = COLORS[cat];
+                ctx.beginPath();
+                ctx.roundRect(2, rowY + rowH / 2 - 9, labelW, 18, 4);
+                ctx.fill();
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 9px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(cat, 2 + labelW / 2, rowY + rowH / 2 + 3);
+
+                // Draw tag blocks for this category
+                allTags.forEach(tag => {
+                    if (tag.cats.includes(cat)) {
+                        const x = pad.left + (tag.start / totalDur) * chartW;
+                        const w = Math.max(2, ((tag.end - tag.start) / totalDur) * chartW);
+                        const inset = 3;
+                        ctx.fillStyle = COLORS[cat];
+                        ctx.globalAlpha = 0.82;
+                        ctx.beginPath();
+                        ctx.roundRect(x, rowY + inset, w, rowH - inset * 2, 2);
+                        ctx.fill();
+                        ctx.globalAlpha = 1;
+                    }
+                });
+            });
+
+            // Draw outer border
+            ctx.strokeStyle = '#cdd1d8';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(pad.left, pad.top, chartW, chartH);
+        }
+
+        // =====================================================
+        //  ANALYSIS CHART — horizontal bar stats
+        // =====================================================
+        function drawAnalysisChart() {
+            const canvas = document.getElementById('analysis-chart');
+            const container = document.getElementById('dash-analysis');
+            canvas.width = container.clientWidth - 2;
+            canvas.height = container.clientHeight - 2;
+
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const totalSessionTime = getTotalSessionTime();
+            const categories = ['Therapeutic', 'Management', 'Null'];
+
+            // Compute stats per category
+            const data = categories.map(cat => {
+                const catTags = allTags.filter(t => t.cats.includes(cat));
+                const totalCatDur = catTags.reduce((sum, t) => sum + (t.end - t.start) / Math.max(t.cats.length, 1), 0);
+                return {
+                    cat,
+                    count: catTags.length,
+                    totalDur: totalCatDur,
+                    pct: totalSessionTime > 0 ? (totalCatDur / totalSessionTime) * 100 : 0,
+                    avgDur: catTags.length > 0 ? totalCatDur / catTags.length : 0
+                };
+            });
+
+            if (allTags.length === 0) {
+                ctx.fillStyle = '#aaa';
+                ctx.font = '11px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('No session data yet.', canvas.width / 2, canvas.height / 2);
+                return;
+            }
+
+            // Layout: three sections stacked vertically
+            const pad = { top: 14, right: 16, bottom: 8, left: 78 };
+            const chartW = canvas.width - pad.left - pad.right;
+            const totalChartH = canvas.height - pad.top - pad.bottom;
+            const sectionH = totalChartH / 3;  // 3 sections
+
+            // Section definitions
+            const sections = [
+                {
+                    label: '% OF SESSION',
+                    key: 'pct',
+                    max: 100,
+                    format: v => `${v.toFixed(1)}%`,
+                    alpha: 0.85
+                },
+                {
+                    label: 'TAG COUNT',
+                    key: 'count',
+                    max: Math.max(...data.map(d => d.count), 1),
+                    format: v => `${v}`,
+                    alpha: 0.7
+                },
+                {
+                    label: 'AVG TAG DURATION',
+                    key: 'avgDur',
+                    max: Math.max(...data.map(d => d.avgDur), 1),
+                    format: v => `${v.toFixed(1)}s`,
+                    alpha: 0.6
+                }
+            ];
+
+            const catH = 14;
+            const catGap = 5;
+            const groupH = categories.length * (catH + catGap) - catGap;
+
+            sections.forEach((section, si) => {
+                const secY = pad.top + si * sectionH;
+                const dataAreaY = secY + 14; // room for section label
+
+                // Section label
+                ctx.fillStyle = '#888';
+                ctx.font = 'bold 8px sans-serif';
+                ctx.textAlign = 'left';
+                ctx.fillText(section.label, pad.left, secY + 9);
+
+                // Divider line above each section (except first)
+                if (si > 0) {
+                    ctx.strokeStyle = '#e5e9ec';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(0, secY);
+                    ctx.lineTo(canvas.width, secY);
+                    ctx.stroke();
+                }
+
+                // Vertically center the bars within the section
+                const innerH = sectionH - 14;
+                const startY = dataAreaY + (innerH - groupH) / 2;
+
+                categories.forEach((cat, ci) => {
+                    const d = data[ci];
+                    const barY = startY + ci * (catH + catGap);
+                    const val = d[section.key];
+                    const barW = section.max > 0 ? (val / section.max) * chartW : 0;
+
+                    // Category pill label
+                    ctx.fillStyle = COLORS[cat];
+                    ctx.beginPath();
+                    ctx.roundRect(2, barY, 70, catH, 3);
+                    ctx.fill();
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 8px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(cat, 37, barY + catH - 4);
+
+                    // Background track
+                    ctx.fillStyle = '#eef0f3';
+                    ctx.beginPath();
+                    ctx.roundRect(pad.left, barY, chartW, catH, 3);
+                    ctx.fill();
+
+                    // Value bar
+                    if (barW > 0) {
+                        ctx.globalAlpha = section.alpha;
+                        ctx.fillStyle = COLORS[cat];
+                        ctx.beginPath();
+                        ctx.roundRect(pad.left, barY, barW, catH, 3);
+                        ctx.fill();
+                        ctx.globalAlpha = 1;
+                    }
+
+                    // Value label
+                    ctx.fillStyle = '#444';
+                    ctx.font = 'bold 8px sans-serif';
+                    ctx.textAlign = 'left';
+                    const labelX = pad.left + barW + 4;
+                    ctx.fillText(section.format(val), Math.min(labelX, canvas.width - 30), barY + catH - 4);
+                });
+            });
+        }
+
+        // =====================================================
         //  MAIN UI UPDATE
         // =====================================================
         function updateUI() {
@@ -766,7 +913,10 @@
                 div.style.background = getStripeBackground(t.cats); timeline.appendChild(div);
             });
 
-            drawPieChart();
+            // Render whichever dashboard tab is active
+            if (currentDashTab === 'overview') drawPieChart();
+            else if (currentDashTab === 'timeline') drawTimelineChart();
+            else if (currentDashTab === 'analysis') drawAnalysisChart();
         }
 
         // ----- EDIT MODAL LOGIC -----
@@ -774,7 +924,7 @@
             editingIndex = index; let tag = allTags[index]; editSelectedCats = [...tag.cats];
             document.getElementById('edit-start').value = formatTime(tag.start); document.getElementById('edit-end').value = formatTime(tag.end);
             document.getElementById('edit-cat-buttons').innerHTML = CAT_ORDER.map(cat => `<button type="button" class="tag-btn btn-${cat} ${editSelectedCats.includes(cat) ? 'active' : ''}" onclick="toggleEditCat('${cat}')">${cat}</button>`).join('');
-            renderEditPrompts(tag.prompts); document.getElementById('edit-modal-overlay').style.display = 'flex';
+            renderEditPrompts(tag.prompts); document.getElementById('modal-overlay').style.display = 'flex';
         }
 
         function toggleEditCat(cat) {
@@ -798,88 +948,20 @@
         }
 
         function deleteTag() { allTags.splice(editingIndex, 1); closeModal(); updateUI(); }
-        function closeModal() { document.getElementById('edit-modal-overlay').style.display = 'none'; editingIndex = null; }
-
-        // ----- ENGAGEMENT RATING LOGIC -----
-        function initEngagementForm() {
-            let html = '<p style="font-size:12px; color:#666; margin-top:0;">Rate each item on a scale of 0-4; with 0 meaning \'not at all\', 2 meaning \'to a moderate extent\' and 4 meaning \'to a great extent\'.</p>';
-            ENGAGEMENT_QUESTIONS.forEach(q => {
-                if (q.section) {
-                    html += `<h4 style="margin: 20px 0 10px 0; color: var(--primary-blue); border-bottom: 2px solid var(--border-color); padding-bottom: 5px;">${q.section}</h4>`;
-                } else {
-                    html += `
-                    <div style="margin-bottom: 15px; padding: 10px; background: white; border: 1px solid var(--border-color); border-radius: 8px;">
-                        <div style="font-weight: bold; font-size: 13px; color: #333;">${q.title}</div>
-                        <div style="font-size: 11px; color: #666; margin-bottom: 8px;">${q.desc}</div>
-                        <div style="display: flex; gap: 15px; align-items: flex-start; flex-wrap: wrap;">
-                            <div class="scale-group" style="flex: 1; min-width: 250px; width: 100%;">
-                                ${[0,1,2,3,4].map(n => `<button type="button" class="scale-btn eng-btn-${q.id}" onclick="setEngScore('${q.id}', ${n})" data-val="${n}">${n}</button>`).join('')}
-                            </div>
-                            <div style="flex: 2; min-width: 250px; width: 100%;">
-                                <input type="text" class="prompt-input" id="eng-note-${q.id}" placeholder="Notes..." oninput="setEngNote('${q.id}', this.value)">
-                            </div>
-                        </div>
-                    </div>`;
-                }
-            });
-            document.getElementById('engagement-form-content').innerHTML = html;
-            updateEngagementUI();
-        }
-
-        function setEngScore(id, val) {
-            sessionEngagement[id].score = val;
-            updateEngagementUI();
-        }
-
-        function setEngNote(id, val) {
-            sessionEngagement[id].notes = val;
-        }
-
-        function updateEngagementUI() {
-            ENGAGEMENT_QUESTIONS.forEach(q => {
-                if (q.id) {
-                    document.querySelectorAll(`.eng-btn-${q.id}`).forEach(btn => {
-                        btn.classList.remove('active');
-                        if (parseInt(btn.getAttribute('data-val')) === sessionEngagement[q.id].score) {
-                            btn.classList.add('active');
-                        }
-                    });
-                    let noteInput = document.getElementById(`eng-note-${q.id}`);
-                    if (noteInput && noteInput.value !== sessionEngagement[q.id].notes) {
-                        noteInput.value = sessionEngagement[q.id].notes || "";
-                    }
-                }
-            });
-        }
-
-        function openEngagementModal() {
-            document.getElementById('engagement-modal-overlay').style.display = 'flex';
-        }
-        function closeEngagementModal() {
-            document.getElementById('engagement-modal-overlay').style.display = 'none';
-        }
-
-        // ----- TUTORIAL MODAL LOGIC -----
-        function openTutorial() { document.getElementById('tutorial-modal-overlay').style.display = 'flex'; }
-        function closeTutorial() { document.getElementById('tutorial-modal-overlay').style.display = 'none'; }
+        function closeModal() { document.getElementById('modal-overlay').style.display = 'none'; editingIndex = null; }
 
         // ----- EXPORT -----
         async function exportCSV(event, btn) {
             if (event) event.preventDefault();
             
             let originalText = btn.innerText;
-            if (allTags.length === 0 && Object.values(sessionEngagement).every(v => v.score === null && v.notes === "")) { 
-                btn.innerText = "No data to save!"; 
+            if (allTags.length === 0) { 
+                btn.innerText = "No tags!"; 
                 setTimeout(() => btn.innerText = originalText, 2000); 
                 return; 
             }
             
-            // Generate standard tags CSV lines
             let csv = "Start_ms,End_ms,Categories,Responses\n" + allTags.map(t => `${Math.floor(t.start*1000)},${Math.floor(t.end*1000)},${t.cats.join('|')},"${JSON.stringify(t.prompts || {}).replace(/"/g, '""')}"`).join('\n');
-            
-            // Append Global Engagement data at the end with a special indicator flag
-            csv += `\nENGAGEMENT,-1,Global,"${JSON.stringify(sessionEngagement).replace(/"/g, '""')}"`;
-
             let defaultFilename = `${currentVideoName}_data.csv`;
             
             if (window.showSaveFilePicker) {
@@ -905,7 +987,7 @@
         }
 
         function showSavedStatus(btn, originalText) {
-            btn.innerText = "Data Saved!";
+            btn.innerText = "Notes Saved!";
             btn.style.backgroundColor = "#2ecc71"; btn.style.color = "white"; btn.style.borderColor = "#27ae60";
             setTimeout(() => { btn.innerText = originalText; btn.style.backgroundColor = ""; btn.style.color = ""; btn.style.borderColor = ""; }, 2500);
         }
@@ -914,13 +996,7 @@
         document.getElementById('pie-chart').addEventListener('click', function(e) {
             if (chartViewMode !== "Main") { chartViewMode = "Main"; updateUI(); return; }
             const rect = this.getBoundingClientRect();
-            
-            // Fallback for touch events
-            let clientX = e.clientX || (e.touches && e.touches[0].clientX);
-            let clientY = e.clientY || (e.touches && e.touches[0].clientY);
-            if(!clientX || !clientY) return;
-
-            const x = clientX - rect.left; const y = clientY - rect.top;
+            const x = e.clientX - rect.left; const y = e.clientY - rect.top;
             const radius = Math.min(this.width, this.height) / 2;
             const dist = Math.sqrt(Math.pow(x - radius, 2) + Math.pow(y - radius, 2));
             if (dist > radius || chartSlices.length === 0) return;
@@ -933,10 +1009,15 @@
             }
         });
 
-        window.onkeydown = (e) => { if (e.code === "Space" && e.target.tagName !== "INPUT" && e.target.tagName !== "TEXTAREA") { e.preventDefault(); togglePlay(); } };
+        // Redraw active chart on window resize
+        window.addEventListener('resize', () => {
+            if (currentDashTab === 'timeline') drawTimelineChart();
+            else if (currentDashTab === 'analysis') drawAnalysisChart();
+        });
+
+        window.onkeydown = (e) => { if (e.code === "Space" && e.target.tagName !== "INPUT") { e.preventDefault(); togglePlay(); } };
         
         // Initial Render
-        initEngagementForm();
         drawPieChart();
     </script>
 </body>
